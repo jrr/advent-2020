@@ -1,4 +1,8 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f4d01193_002D0bf5_002D4f66_002Da95c_002Dfa3e688dc404/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;template&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;Project Location="/Users/jrr/repos/advent-2020/template" Presentation="&amp;lt;template&amp;gt;" /&gt;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+  &lt;Or&gt;
+    &lt;Project Location="/Users/jrr/repos/advent-2020/template" Presentation="&amp;lt;template&amp;gt;" /&gt;
+    &lt;Project Location="/Users/jrr/repos/advent-2020/01" Presentation="&amp;lt;01&amp;gt;" /&gt;
+  &lt;/Or&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=dac7ff55_002D3941_002D4ecc_002Dae77_002Dd09ddadb71de_0023template/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
