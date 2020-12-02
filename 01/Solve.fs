@@ -23,10 +23,24 @@ let rec findPairIn (sum: int) (input: LinkedList<int>) =
             findPairIn sum input
 
 let findPair (sum: int) (input: int list) =
-    let sorted = input |> List.sort
-    let ll = new LinkedList<int>(sorted) // cheating
+    let ll = new LinkedList<int>(input) // cheating
     findPairIn sum ll
 
 let solve (input: int list) =
-    let (a, b) = findPair 2020 input |> Option.get
+    let sorted = input |> List.sort
+    let (a, b) = findPair 2020 sorted |> Option.get
     a * b
+
+    
+let rec findThree (sum: int) (input: int list) =
+    
+    let head::tail = input
+    let r = findPair (sum-head) tail
+    match r with
+    | None -> findThree sum tail
+    | Some (b,c) -> Some (head,b,c)
+    
+let solve3 (input:int list) =
+    let sorted = input |> List.sort
+    let (a,b,c) = findThree 2020 sorted |> Option.get
+    a * b * c

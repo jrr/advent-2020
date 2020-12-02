@@ -212,7 +212,7 @@ let input2 =
 
 [<Fact>]
 let ``finds pair`` () =
-    findPair 2020 input1 |> should equal (Some (299, 1721))
+    findPair 2020 input1 |> should equal (Some (1721, 299))
     
 [<Fact>]
 let ``doesn't find pair`` () =
@@ -223,3 +223,9 @@ let ``solve small example`` () = solve input1 |> should equal 514579
 
 [<Fact>]
 let ``solve problem`` () = solve input2 |> should equal 494475
+
+[<Fact>]
+let ``solve example 1b`` () = solve3 input1 |> should equal 241861950
+
+[<Fact>]
+let ``solve 1b`` () = solve3 input2 |> should equal 267520550
