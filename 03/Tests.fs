@@ -378,3 +378,23 @@ let ``solve 3a example`` () =
 [<Fact>]
 let ``solve 3a problem`` () =
     drive (parse input2) (0,0) (3,1) |> should equal 234
+    
+let slopes = [(1,1);(3,1);(5,1);(7,1);(1,2)]
+
+[<Fact>]
+let ``solve 3b example`` () =
+    let map = parse input1
+    
+    slopes
+        |> Seq.map (fun slope -> drive map (0,0) slope)
+        |> Seq.reduce (*)
+        |> should equal 336
+[<Fact>]
+let ``solve 3b problem`` () =
+    let map = parse input2
+    
+    slopes
+        |> Seq.map (fun slope -> drive map (0,0) slope)
+        |> Seq.map int64
+        |> Seq.reduce (*)
+        |> should equal 0

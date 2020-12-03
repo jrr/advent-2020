@@ -1,5 +1,4 @@
 module Solve
-open System
 
 let solve (input:string) =
     input
@@ -14,6 +13,7 @@ let lookup (input: string seq) (loc: int*int) =
 
 let addTup a b =
     (fst a + fst b),(snd a + snd b)
+    
 let rec drive (input:string seq) (pos:int*int) (slope:int*int) =
     let r = lookup input pos
     let newPos = addTup pos slope
