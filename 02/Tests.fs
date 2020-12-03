@@ -1030,3 +1030,11 @@ let ``solves example`` () =
 [<Fact>]      
 let ``solves problem`` () =
     solve input2 |> should equal 645
+[<Fact>]
+
+let ``solves 2b example`` () =
+    solve2 input1 |> should equal 1
+    
+[<Fact>]      
+let ``solves 2b problem`` () =
+    solve2 input2 |> should equal 737

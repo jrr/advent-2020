@@ -34,10 +34,20 @@ let validate (record: Parsed) =
 
 
 
-let solve (input: string) =
+let innerSolve (input: string) (validate: Parsed -> bool) =
     input.Split '\n'
     |> Seq.map (fun l -> l.Trim())
     |> Seq.filter (fun l -> l.Length <> 0)
     |> Seq.map parse
     |> Seq.filter validate
     |> Seq.length
+    
+let solve (input: string) =
+    innerSolve input validate
+
+let validate2 (record:Parsed) =
+    let char1 = record.string.[fst record.range - 1]
+    let char2 = record.string.[snd record.range - 1]
+    (char1 = record.char) <> (char2 = record.char)
+let solve2 (input:string) =
+    innerSolve input validate2
