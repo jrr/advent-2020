@@ -397,4 +397,4 @@ let ``solve 3b problem`` () =
         |> Seq.map (fun slope -> drive map (0,0) slope)
         |> Seq.map int64
         |> Seq.reduce (*)
-        |> should equal 0
+        |> should equal 5813773056L
