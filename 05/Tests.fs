@@ -794,9 +794,7 @@ let ``solve 5b`` () =
     let last = seatIds |> Seq.rev |> Seq.head
     let counting = seq { first .. last }
     Seq.zip seatIds counting
-    |> Seq.iter (fun (a, b) ->
-        if a <> b then
-            printfn "mismatch actual=%d expected=%d" a b // it was 562
-            ()
-        else
-            ())
+    |> Seq.filter (fun (a, b) -> a <> b)
+    |> Seq.head
+    |> snd
+    |> should equal 562
