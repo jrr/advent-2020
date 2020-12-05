@@ -6,17 +6,17 @@ open FsUnit.Xunit
 open Solve
 
 [<Fact>]
-let ``solves problem`` () = solve "foo" |> should equal "foo"
-
-[<Fact>]
 let ``parse row`` () =
     parse "BFFFBBFRRR" |> should equal (70, 7)
-    parse "FFFBBBFRRR" |> should equal (14, 7) //, seat ID 119.
-    parse "BBFFBBFRLL" |> should equal (102, 4) //, seat ID 820.
+    parse "FFFBBBFRRR" |> should equal (14, 7)
+    parse "BBFFBBFRLL" |> should equal (102, 4)
 
 [<Fact>]
-let ``calculate ID`` () =
+let ``calculates ID naively`` () =
     parse "BFFFBBFRRR" |> seatId |> should equal 567
+
+[<Fact>]
+let ``calculates ID the new way`` () = "BFFFBBFRRR" |> calc |> should equal 567
 
 
 let input = """FBBBBBBLRR
@@ -779,7 +779,9 @@ BFFBBBBRLL"""
 
 [<Fact>]
 let ``solve 5a`` () =
-    (Seq.map (parse >> seatId) (input.Split('\n')))
+    input.Split('\n')
+    |> Seq.map (calc)
+    |> Seq.sort
     |> Seq.sortDescending
     |> Seq.head
     |> should equal 806
@@ -787,12 +789,12 @@ let ``solve 5a`` () =
 [<Fact>]
 let ``solve 5b`` () =
     let seatIds =
-        (Seq.map (parse >> seatId) (input.Split('\n')))
-        |> Seq.sort
+        input.Split('\n') |> Seq.map (calc) |> Seq.sort
 
     let first = seatIds |> Seq.head
     let last = seatIds |> Seq.rev |> Seq.head
     let counting = seq { first .. last }
+
     Seq.zip seatIds counting
     |> Seq.filter (fun (a, b) -> a <> b)
     |> Seq.head

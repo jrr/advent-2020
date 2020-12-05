@@ -20,3 +20,14 @@ let parse (input: string) =
 let seatId (x: int * int) =
     let (l, r) = x
     l * 8 + r
+
+let charToBit (c:char) =
+    match c with
+    | 'B' -> '1'
+    | 'F' -> '0'
+    | 'R' -> '1'
+    | 'L' -> '0'
+    | _ -> failwith "unrecognized char"
+
+let calc (s:string) =
+    s |> Seq.map(charToBit) |> String.Concat |> parseBinary
