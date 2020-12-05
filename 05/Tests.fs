@@ -778,9 +778,25 @@ FFBFBFFRRR
 BFFBBBBRLL"""
 
 [<Fact>]
-
 let ``solve 5a`` () =
     (Seq.map (parse >> seatId) (input.Split('\n')))
     |> Seq.sortDescending
     |> Seq.head
     |> should equal 806
+
+[<Fact>]
+let ``solve 5b`` () =
+    let seatIds =
+        (Seq.map (parse >> seatId) (input.Split('\n')))
+        |> Seq.sort
+
+    let first = seatIds |> Seq.head
+    let last = seatIds |> Seq.rev |> Seq.head
+    let counting = seq { first .. last }
+    Seq.zip seatIds counting
+    |> Seq.iter (fun (a, b) ->
+        if a <> b then
+            printfn "mismatch actual=%d expected=%d" a b // it was 562
+            ()
+        else
+            ())
