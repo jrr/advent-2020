@@ -60,6 +60,8 @@ let ``given example ``() =
 
     what |> should equal 11
 
+
+
 let input2 = """
 qzbw
 qez
@@ -2318,4 +2320,32 @@ let ``solves the problem``() =
         |> Seq.reduce (+)
         
 
-    what |> should equal 11
+    what |> should equal 6742
+    
+[<Fact>]
+let ``solve 6b``() =
+    let what =
+        input2.Split("\n\n")
+        |> Seq.map (fun s -> s.Trim())
+        |> Seq.filter (fun s -> s.Length > 0)
+        |> Seq.map (fun s ->
+            let groupLines = s.Split("\n")
+            let numPeople = groupLines.Length
+            
+            printfn "within group of %d people" numPeople
+            s.Replace("\n", "").Trim()
+            |> Seq.countBy(fun c -> c)
+            |> Seq.filter (fun x ->
+                printfn "did everyone answer yes for %c? %d" (fst x) (snd x)
+                snd x = numPeople)
+            |> Seq.length
+//            |> Seq.sort
+//            |> Seq.distinct
+//            |> String.Concat
+//            |> (fun ss -> ss.Trim())
+//            |> Seq.length
+            )
+        |> Seq.reduce (+)
+        
+
+    what |> should equal 3447
