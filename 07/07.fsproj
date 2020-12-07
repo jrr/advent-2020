@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Include="Solve.fs" />
+    <Compile Include="Input.fs" />
     <Compile Include="Tests.fs" />
   </ItemGroup>
 
