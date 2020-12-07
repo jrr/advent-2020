@@ -11,7 +11,7 @@ let ``parseLines parses lines`` () =
 asdf
 jkl
 qwer"""
-    |> parseLines
+    |> nonEmptyLines
     |> List.ofSeq
     |> should equal [ "asdf"; "jkl"; "qwer" ]
 
@@ -25,7 +25,7 @@ qwer
 uio
 
 zxcv"""
-    |> parseLineGroups
+    |> lineGroups
     |> Seq.map (List.ofSeq)
     |> List.ofSeq
     |> should

@@ -1,11 +1,21 @@
 module Common
 
-let parseLines (s: string) =
-    s.Split [| '\n'; '\r' |]
-    |> Seq.map (fun s -> s.Trim())
-    |> Seq.filter (fun s -> s <> "")
 
-let parseLineGroups (s: string) =
+let lineSeq (s: string) =
+    let splits = s.Split [| '\n'; '\r' |]
+    seq {
+        for line in splits do
+            yield line
+    }
+
+
+let nonEmptyLines (s: string) =
+    s
+    |> lineSeq
+    |> Seq.map (fun s -> s.Trim())
+    |> Seq.filter (fun s -> s.Length > 0)
+
+let lineGroups (s: string) = // todo: build in terms of above functions
     s.Replace("\r", "").Split("\n\n")
     |> Seq.map (fun s -> s.Trim())
     |> Seq.filter (fun s -> s <> "")
