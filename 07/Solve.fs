@@ -26,6 +26,7 @@ let parseLine (s: string): ParsedLine =
 
     (outerColor, innerColors)
 
+/// turn a parsed line into a list of color pairs (left bag contains right bag)
 let flattenLine (record: ParsedLine) =
     let left = fst record
     let right = snd record
@@ -33,13 +34,16 @@ let flattenLine (record: ParsedLine) =
     | None -> []
     | Some r -> r |> (List.map (fun x -> (left, snd x)))
 
-let buildMap input =
+let flip (a, b) = (b, a)
+
+/// returns a map of innerBagColor to a list of bag colors that contain it
+let buildMapOfEdges input =
     input
     |> Common.nonEmptyLines
     |> Seq.map parseLine
     |> Seq.map flattenLine
     |> Seq.concat
-    |> Seq.map (fun (a, b) -> (b, a))
+    |> Seq.map flip
     |> Seq.groupBy fst
     |> Seq.map (fun (innerBag, y) -> (innerBag, (y |> Seq.map snd |> List.ofSeq)))
     |> Map.ofSeq

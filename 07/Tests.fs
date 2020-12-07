@@ -47,7 +47,7 @@ vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
 faded blue bags contain no other bags.
     """
 
-    let result = buildMap Input.exampleInput
+    let result = buildMapOfEdges Input.exampleInput
 
     let expected =
         (
@@ -72,7 +72,7 @@ faded blue bags contain no other bags.
 
 [<Fact>]
 let ``solves 7a example`` () =
-    let map = buildMap Input.exampleInput
+    let map = buildMapOfEdges Input.exampleInput
 
     let result =
         findOtherColorsContaining map "shiny gold"
@@ -89,23 +89,9 @@ let ``solves 7a example`` () =
 
 [<Fact>]
 let ``solves 7a problem`` () =
-    let map = buildMap Input.problemInput
+    let map = buildMapOfEdges Input.problemInput
 
     let result =
         findOtherColorsContaining map "shiny gold"
 
     result |> Seq.length |> should equal 355
-
-(*
-plan for 7b:
-
-x - clean up 7a
-  x - move impl functions to solve.fs
-  x - move test data to separate file
-- refactor 7a
-  - remove flattening, so that final map still contains numbers of bags
-- figure out algorithm
-  - memoize?
-
-
-*)
