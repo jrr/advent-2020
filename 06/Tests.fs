@@ -4,6 +4,7 @@ open System
 open Xunit
 open FsUnit.Xunit
 open Solve
+open Common
 
 [<Fact>]
 let ``solves problem`` () = solve "foo" |> should equal "foo"
@@ -42,23 +43,10 @@ a
 b
 """
 
-[<Fact>]
-let ``given example ``() =
-    let what =
-        exampleInput.Split("\n\n")
-        |> Seq.map (fun s -> s.Trim())
-        |> Seq.filter (fun s -> s.Length > 0)
-        |> Seq.map (fun s ->
-            s.Replace("\n", "")
-            |> Seq.sort
-            |> Seq.distinct
-            |> String.Concat
-            |> (fun ss -> ss.Trim())
-            |> Seq.length)
-        |> Seq.reduce (+)
-        
 
-    what |> should equal 11
+[<Fact>]
+let ``given example `` () =
+    exampleInput |> solve6a |> should equal 11
 
 
 
@@ -2304,26 +2292,13 @@ jukfrv
 kvfujr
 
 """
-[<Fact>]
-let ``solves the problem``() =
-    let what =
-        input2.Split("\n\n")
-        |> Seq.map (fun s -> s.Trim())
-        |> Seq.filter (fun s -> s.Length > 0)
-        |> Seq.map (fun s ->
-            s.Replace("\n", "")
-            |> Seq.sort
-            |> Seq.distinct
-            |> String.Concat
-            |> (fun ss -> ss.Trim())
-            |> Seq.length)
-        |> Seq.reduce (+)
-        
 
-    what |> should equal 6742
-    
 [<Fact>]
-let ``solve 6b``() =
+let ``solves the problem`` () =
+    input2 |> solve6a |> should equal 6742
+
+[<Fact>]
+let ``solve 6b`` () =
     let what =
         input2.Split("\n\n")
         |> Seq.map (fun s -> s.Trim())
@@ -2331,21 +2306,12 @@ let ``solve 6b``() =
         |> Seq.map (fun s ->
             let groupLines = s.Split("\n")
             let numPeople = groupLines.Length
-            
-            printfn "within group of %d people" numPeople
+
             s.Replace("\n", "").Trim()
-            |> Seq.countBy(fun c -> c)
-            |> Seq.filter (fun x ->
-                printfn "did everyone answer yes for %c? %d" (fst x) (snd x)
-                snd x = numPeople)
-            |> Seq.length
-//            |> Seq.sort
-//            |> Seq.distinct
-//            |> String.Concat
-//            |> (fun ss -> ss.Trim())
-//            |> Seq.length
-            )
+            |> Seq.countBy (fun c -> c)
+            |> Seq.filter (fun x -> snd x = numPeople)
+            |> Seq.length)
         |> Seq.reduce (+)
-        
+
 
     what |> should equal 3447

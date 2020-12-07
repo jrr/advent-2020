@@ -1,14 +1,16 @@
 module Solve
 
 open System
+open Common
 
 
 let parse (input: string) =
-    input.Split("\n\n")
-    |> Seq.map (fun s -> s.Trim())
-    |> Seq.filter (fun s -> s.Length > 0)
-    |> Seq.map (fun s ->
-        s.Split([| ' '; '\n' |])
+    input
+    |> lineGroups
+    |> Seq.map (fun linesInGroup ->
+        linesInGroup
+        |> String.concat " "
+        |> fun s -> s.Split([| ' '; '\n' |])
         |> Seq.map (fun s2 -> s2.Split(':'))
         |> Seq.map (fun a -> (a.[0], a.[1]))
         |> Array.ofSeq)
@@ -54,9 +56,17 @@ let validateFieldValue (input: (string * string)): bool =
     | "hgt", v -> validateHeight v
     | "hcl", Regex @"#[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]" [] -> true
     | "hcl", _ -> false
-    | "ecl", v -> ["amb";"blu";"brn";"gry";"grn";"hzl";"oth"] |> Seq.contains v
+    | "ecl", v ->
+        [ "amb"
+          "blu"
+          "brn"
+          "gry"
+          "grn"
+          "hzl"
+          "oth" ]
+        |> Seq.contains v
     | "pid", Regex @"^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$" [] -> true
-    | "cid",_ -> true
+    | "cid", _ -> true
     | _ -> false
 
 let validateFieldValues (input: (string * string) seq): bool =
