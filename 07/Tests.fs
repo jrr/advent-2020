@@ -11,26 +11,34 @@ let ``parseLine parses`` () =
     parseLine "muted yellow bags contain 2 shiny gold bags, 9 faded blue bags."
     |> should
         equal
-           ("muted yellow",
-            Some [ (2, "shiny gold")
-                   (9, "faded blue") ])
+           { OuterBagColor = "muted yellow"
+             InnerBags =
+                 SomeBags [ (2, "shiny gold")
+                            (9, "faded blue") ] }
 
     let x =
         parseLine "faded blue bags contain no other bags."
 
-    Assert.StrictEqual(x, ("faded blue", None))
+    Assert.StrictEqual
+        (x,
+         { OuterBagColor = "faded blue"
+           InnerBags = NoOtherBags })
 
 
     "bright white bags contain 1 shiny gold bag."
     |> parseLine
-    |> should equal ("bright white", Some [ (1, "shiny gold") ])
+    |> should
+        equal
+           { OuterBagColor = "bright white"
+             InnerBags = SomeBags [ (1, "shiny gold") ] }
 
 [<Fact>]
 let flattens () =
     let result =
-        ("muted yellow",
-         Some [ (2, "shiny gold")
-                (9, "faded blue") ])
+        { OuterBagColor = "muted yellow"
+          InnerBags =
+              SomeBags [ (2, "shiny gold")
+                         (9, "faded blue") ] }
         |> flattenLine
 
     Assert.StrictEqual
@@ -95,3 +103,41 @@ let ``solves 7a problem`` () =
         findOtherColorsContaining map "shiny gold"
 
     result |> Seq.length |> should equal 355
+
+[<Fact>]
+let ``solves 7b example`` () =
+    let data =
+        Input.exampleInput
+        |> Common.nonEmptyLines
+        |> Seq.map parseLine
+
+    let result = countContainedBags data "shiny gold"
+    result |> should equal 32
+    ()
+
+[<Fact>]
+let ``countContainedBags 1`` () =
+    let smallInput = """
+green bags contain 1 blue, 2 yellow bags.
+purple bags contain 1 green bag.
+"""
+
+    let data =
+        smallInput
+        |> Common.nonEmptyLines
+        |> Seq.map parseLine
+
+    let result = countContainedBags data "green"
+    result |> should equal 3
+    ()
+
+[<Fact>]
+let ``solves 7b`` () =
+    let data =
+        Input.problemInput
+        |> Common.nonEmptyLines
+        |> Seq.map parseLine
+
+    let result = countContainedBags data "shiny gold"
+    result |> should equal 5312
+    ()

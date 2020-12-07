@@ -2,12 +2,19 @@ module Solve
 
 open System
 
+type Color = string
 
-type ParsedLine = string * ((int * string) list option)
+type InnerBags =
+    | NoOtherBags
+    | SomeBags of (int * Color) list
+
+type ParsedLine =
+    { OuterBagColor: Color
+      InnerBags: InnerBags }
+
 
 let parseLine (s: string): ParsedLine =
     let sides = s.Split(" bags contain ")
-    let outerColor = sides.[0]
 
     let innerColors =
         if sides.[1] = "no other bags." then
@@ -24,15 +31,20 @@ let parseLine (s: string): ParsedLine =
             |> Seq.toList
             |> Some
 
-    (outerColor, innerColors)
+    let innerBags: InnerBags =
+        match innerColors with
+        | None -> NoOtherBags
+        | Some x -> x |> SomeBags
 
-/// turn a parsed line into a list of color pairs (left bag contains right bag)
+    { OuterBagColor = sides.[0]
+      InnerBags = innerBags }
+
 let flattenLine (record: ParsedLine) =
-    let left = fst record
-    let right = snd record
+    let left = record.OuterBagColor
+    let right = record.InnerBags
     match right with
-    | None -> []
-    | Some r -> r |> (List.map (fun x -> (left, snd x)))
+    | NoOtherBags -> []
+    | SomeBags b -> b |> (List.map (fun x -> (left, snd x)))
 
 let flip (a, b) = (b, a)
 
@@ -49,7 +61,7 @@ let buildMapOfEdges input =
     |> Map.ofSeq
 
 
-let rec go (map: Map<string, string list>) color =
+let rec go (map: Map<Color, Color list>) color =
     let row = map |> Map.tryFind color
     match row with
     | None -> [ color ]
@@ -61,6 +73,25 @@ let rec go (map: Map<string, string list>) color =
 
         accum
 
-let findOtherColorsContaining (map: Map<string, string list>) (color: string) =
+let findOtherColorsContaining (map: Map<Color, Color list>) (color: Color) =
     let result = go map color
     result |> List.filter (fun c -> c <> color)
+
+let rec countContainedBags (data: ParsedLine seq) (color: Color) =
+    let x =
+        data
+        |> Seq.tryFind (fun s -> s.OuterBagColor = color)
+
+    match x with
+    | None -> 0
+    | Some contained ->
+        match contained.InnerBags with
+        | NoOtherBags -> 0
+        | SomeBags b ->
+            b
+            |> Seq.map (fun bag ->
+                let numBags = fst bag
+                let contained = countContainedBags data (snd bag)
+                numBags * ( 1 + contained )
+            )
+            |> Seq.sum
