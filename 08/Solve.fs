@@ -25,11 +25,15 @@ let permute (input: Instruction list): Instruction list seq =
     let numbered = input |> List.mapi (fun i x -> (i, x))
     seq {
         for item in numbered do
-            let newList =
-                numbered
-                |> List.map (fun (i, x) -> if i = fst item then maybePatch x else x)
+            let (_,(instr,_)) = item
+            if instr = "acc" then
+                ()
+            else
+                let newList =
+                    numbered
+                    |> List.map (fun (i, x) -> if i = fst item then maybePatch x else x)
 
-            yield newList
+                yield newList
     }
 
 type TerminationCondition =
