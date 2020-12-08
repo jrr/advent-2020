@@ -49,7 +49,6 @@ let ``permutes program`` () =
     |> should
         equal
            [ [ ("jmp", 0); ("acc", 1); ("jmp", 4) ]
-             [ ("nop", 0); ("acc", 1); ("jmp", 4) ]
              [ ("nop", 0); ("acc", 1); ("nop", 4) ] ]
 
 [<Fact>]
