@@ -1,6 +1,6 @@
 module Input
 
-let inputLines = """
+let exampleInput = """
 nop +0
 acc +1
 jmp +4
@@ -12,7 +12,7 @@ jmp -4
 acc +6
 """
 
-let input = """
+let problemInput = """
 acc +40
 jmp +187
 acc +47
