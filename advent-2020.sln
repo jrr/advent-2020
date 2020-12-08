@@ -21,6 +21,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "common", "common\common.fsp
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "07", "07\07.fsproj", "{F12AE76B-F4BD-4604-BF80-D4B52CF7B60C}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "08", "08\08.fsproj", "{E38728A6-C850-407D-A0E6-5240E4022F0A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -142,5 +144,17 @@ Global
 		{F12AE76B-F4BD-4604-BF80-D4B52CF7B60C}.Release|x64.Build.0 = Release|Any CPU
 		{F12AE76B-F4BD-4604-BF80-D4B52CF7B60C}.Release|x86.ActiveCfg = Release|Any CPU
 		{F12AE76B-F4BD-4604-BF80-D4B52CF7B60C}.Release|x86.Build.0 = Release|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Debug|x64.Build.0 = Debug|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Debug|x86.Build.0 = Debug|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Release|x64.ActiveCfg = Release|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Release|x64.Build.0 = Release|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Release|x86.ActiveCfg = Release|Any CPU
+		{E38728A6-C850-407D-A0E6-5240E4022F0A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
