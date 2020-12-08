@@ -86,3 +86,36 @@ let ``solves 8a problem`` () =
 let ``terminates at the end of a program`` () =
     execute Input.terminatingInput
     |> should equal (EndOfProgram({ iptr = 8; accum = 2 }, { iptr = 9; accum = 8 }, ("acc", 6)))
+
+let maybePatch (i: Instruction): Instruction =
+    match i with
+    | "nop", x -> "jmp", x
+    | "jmp", x -> "nop", x
+    | "acc", _ -> i
+    | _ -> failwith "unrecognized instruction"
+
+let permute (input: Instruction list): Instruction list seq =
+    let numbered = input |> List.mapi (fun i x -> (i, x))
+    seq {
+        for item in numbered do
+            let newList =
+                numbered
+                |> List.map (fun (i, x) -> if i = fst item then maybePatch x else x)
+
+            yield newList
+    }
+
+[<Fact>]
+let ``permutes program`` () =
+    let input = [ ("nop", 0); ("acc", 1); ("jmp", 4) ]
+    input
+    |> permute
+    |> Seq.toList
+    |> should
+        equal
+           [ [ ("jmp", 0); ("acc", 1); ("jmp", 4) ]
+             [ ("nop", 0); ("acc", 1); ("jmp", 4) ]
+             [ ("nop", 0); ("acc", 1); ("nop", 4) ] ]
+
+
+let ``solves 8b example`` () = ()
