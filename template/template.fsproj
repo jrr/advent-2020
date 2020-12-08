@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Include="Solve.fs" />
+    <Compile Include="Input.fs" />
     <Compile Include="Tests.fs" />
   </ItemGroup>
 
@@ -17,6 +18,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\common\common.fsproj" />
   </ItemGroup>
 
 </Project>

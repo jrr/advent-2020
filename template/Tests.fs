@@ -10,16 +10,16 @@ let ``solves problem`` () = solve "foo" |> should equal "foo"
 
 
 
-let input = """FBBBBBBLRR
-FFBBBBFRRL
-FFBBBFBRLR
-BFFBFBFRLL
-BFFFBBFRRR
-FFBFBFFRRR
-BFFBBBBRLL"""
-
 [<Fact>]
-let stuff () =
-    input.Split('\n')
+let ``reads lines of text`` () =
+    Input.inputLines
+    |> Common.nonEmptyLines
     |> Seq.length
     |> should greaterThan 3
+
+[<Fact>]
+let ``reads groups of lines of text`` () =
+    Input.inputGroups
+    |> Common.lineGroups
+    |> Seq.length
+    |> should equal 2
