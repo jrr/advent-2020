@@ -1,7 +1,5 @@
 module Solve
 
-let solve (input: string) = input
-
 let parse (input: string) =
     let splits = input.Split(' ')
     let instr = splits.[0]
@@ -25,7 +23,7 @@ let permute (input: Instruction list): Instruction list seq =
     let numbered = input |> List.mapi (fun i x -> (i, x))
     seq {
         for item in numbered do
-            let (_,(instr,_)) = item
+            let (_, (instr, _)) = item
             if instr = "acc" then
                 ()
             else
