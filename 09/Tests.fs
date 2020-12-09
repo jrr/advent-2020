@@ -76,7 +76,7 @@ let rec findContiguousRangeSumming (sum: int64) (currentRange: RangePointer) (in
         printfn "Found! Range len %d, sum %d" rangeLen currentSum
         Some currentRange
     | x when x < sum ->
-//        printfn "len %d, sum %d -> growing range" rangeLen currentSum
+        //        printfn "len %d, sum %d -> growing range" rangeLen currentSum
         if currentRange.finish > intArray.Length then
             None
         else
@@ -90,7 +90,7 @@ let rec findContiguousRangeSumming (sum: int64) (currentRange: RangePointer) (in
 
             findContiguousRangeSumming sum newRange2 intArray
     | x when x > sum ->
-//        printfn "len %d, sum %d -> shrinking range" rangeLen currentSum
+        //        printfn "len %d, sum %d -> shrinking range" rangeLen currentSum
         let newStart = currentRange.start + 1
         let removedDigit = intArray.[currentRange.start]
 
@@ -108,7 +108,7 @@ let rec findContiguousRangeSumming (sum: int64) (currentRange: RangePointer) (in
 //    findContiguousRangeSumming [] intSeq 127L
 //    |> should equal (RangeFound(seq [ 15L; 25L; 47L; 40L ]))
 
-let rec findContiguousRangesLessThan (nums: int64 seq) (max: int64) =
+let rec findContiguousRangesLessThan nums max =
     seq {
         if Seq.isEmpty nums then
             ()
@@ -165,7 +165,9 @@ let ``solves 9b problem`` () =
     solve9b Input.problemInput 507622668L
     |> should equal (Some 76688505L)
 
-//[<Fact>]
-//let ``finds contiguous ranges under a limit`` () =
-//    findContiguousRangesLessThan [ 1L; 2L; 5L; 3L; 4L; 10L; 11L; 3L; 1L ] 4L
-//    |> should equal (seq [seq [ 1L; 2L ];seq [ 3L; 4L ]; seq[ 3L; 1L ] ])
+[<Fact>]
+let ``finds contiguous ranges under a limit`` () =
+    findContiguousRangesLessThan [ 1; 2; 5; 3; 4; 10; 11; 3; 1 ] 4
+    |> Seq.map (List.ofSeq)
+    |> List.ofSeq
+    |> should equal [ [ 1; 2 ]; [ 3; 4 ]; [ 3; 1 ] ]
