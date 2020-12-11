@@ -14,3 +14,11 @@ a group
 and this is
 another one
 """
+
+let exampleInput = """
+foo
+"""
+
+let problemInput = """
+bar
+"""
