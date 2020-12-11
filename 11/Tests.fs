@@ -45,8 +45,8 @@ type ``Helpers`` () =
         
 type ``11A`` () =
     [<Fact>]
-    let ``game of life round 1`` () =
-        Input.exampleInput |> parse |> tick |> unparse |> should equal """
+    let ``example round 1`` () =
+        Input.exampleInput |> parse |> tick11a |> unparse |> should equal """
 #.##.##.##
 #######.##
 #.#.#..#..
@@ -60,7 +60,7 @@ type ``11A`` () =
 """
 
     [<Fact>]
-    let ``game of life round 2`` () =
+    let ``example round 2`` () =
         """
 #.##.##.##
 #######.##
@@ -73,7 +73,7 @@ type ``11A`` () =
 #.######.#
 #.#####.##
 """
-        |> parse |> tick |> unparse |> should equal """
+        |> parse |> tick11a |> unparse |> should equal """
 #.LL.L#.##
 #LLLLLL.L#
 L.L.L..L..
@@ -89,17 +89,16 @@ L.L.L..L..
         
     [<Fact>]
     let ``solves 11a example`` () =
-        Input.exampleInput |> parse |> solve |> should equal {NumRounds=5;OccupiedSeats=37}
+        Input.exampleInput |> parse |> solve11a |> should equal {NumRounds=5;OccupiedSeats=37}
         
     [<Fact>]
     let ``solves 11a problem`` () =
-        Input.problemInput |> parse |> solve |> should equal {NumRounds=115;OccupiedSeats=2126}
+        Input.problemInput |> parse |> solve11a |> should equal {NumRounds=115;OccupiedSeats=2126}
 type ``11B`` () =
     
     [<Fact>]
-    let ``game of life round 1`` () =
-        // todo
-        Input.exampleInput |> parse |> tick |> unparse |> should equal """
+    let ``example round 2`` () =
+        """
 #.##.##.##
 #######.##
 #.#.#..#..
@@ -111,3 +110,31 @@ type ``11B`` () =
 #.######.#
 #.#####.##
 """
+        |> parse |> tick11b |> unparse |> should equal """
+#.LL.LL.L#
+#LLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLL#
+#.LLLLLL.L
+#.LLLLL.L#
+"""
+
+    [<Fact>]
+    let ``raycast example 1`` () =
+        let input = parse """
+.............
+.L.L.#.#.#.#.
+............."""
+        raycast input (0,1) (1,1) |> should equal [Neighbor Floor; Neighbor OpenSeat]
+        
+    [<Fact>]
+    let ``solves 11b example`` () =
+        Input.exampleInput |> parse |> solve11b |> should equal {NumRounds=6;OccupiedSeats=26}
+        
+    [<Fact>]
+    let ``solves 11b problem`` () =
+        Input.problemInput |> parse |> solve11b |> should equal {NumRounds=84;OccupiedSeats=1914}
