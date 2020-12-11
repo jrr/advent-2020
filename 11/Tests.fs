@@ -163,9 +163,24 @@ let ``detects mismatched boards`` () =
     let b2 = [|[|Floor;OpenSeat;OccupiedSeat|];[|OccupiedSeat;OpenSeat;Floor|] |]
     boardEq b1 b2 |> should equal false
     
-let  solve (input: Seat array array) =
-    {NumRounds=0;OccupiedSeats=0}
+let countOccupied (input: Seat array array) =
+    input |> Seq.concat |> Seq.filter (fun s -> s = OccupiedSeat) |> Seq.length
+                                       
+let rec solveRec (input: Seat array array) (numRounds:int)=
+    let after = tick input
+    let count = countOccupied input
+    if boardEq input after then
+        {NumRounds=numRounds;OccupiedSeats=count}
+    else
+        solveRec after (numRounds+1)
+    
+let solve (input: Seat array array) =
+    solveRec input 0
     
 [<Fact>]
 let ``solves 11a example`` () =
-    Input.exampleInput |> parse |> solve |> should equal ()
+    Input.exampleInput |> parse |> solve |> should equal {NumRounds=5;OccupiedSeats=37}
+    
+[<Fact>]
+let ``solves 11a problem`` () =
+    Input.problemInput |> parse |> solve |> should equal {NumRounds=115;OccupiedSeats=2126}
