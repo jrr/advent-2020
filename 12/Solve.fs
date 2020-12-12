@@ -30,37 +30,25 @@ let South i = { X = 0; Y = 0 - i }
 let East i = { X = i; Y = 0 }
 let West i = { X = 0 - i; Y = 0 }
 
+let moveCoords state c =
+    { state with
+          Coords = add state.Coords c }
+
 let goForward state i =
     match state.Facing with
-    | 0 ->
-        { state with
-              Coords = add state.Coords (North i) }
-    | 90 ->
-        { state with
-              Coords = add state.Coords (East i) }
-    | 180 ->
-        { state with
-              Coords = add state.Coords (South i) }
-    | 270 ->
-        { state with
-              Coords = add state.Coords (West i) }
+    | 0 -> moveCoords state (North i)
+    | 90 -> moveCoords state (East i)
+    | 180 -> moveCoords state (South i)
+    | 270 -> moveCoords state (West i)
     | _ -> failwith "unhandled direction"
 
 
 let reduceShipState (state: ShipState) (instr: char * int) =
     match instr with
-    | ('N', i) ->
-        { state with
-              Coords = add state.Coords (North i) }
-    | ('E', i) ->
-        { state with
-              Coords = add state.Coords (East i) }
-    | ('S', i) ->
-        { state with
-              Coords = add state.Coords (South i) }
-    | ('W', i) ->
-        { state with
-              Coords = add state.Coords (West i) }
+    | ('N', i) -> moveCoords state (North i)
+    | ('E', i) -> moveCoords state (East i)
+    | ('S', i) -> moveCoords state (South i)
+    | ('W', i) -> moveCoords state (West i)
     | ('L', i) ->
         { state with
               Facing = ((state.Facing + 360 - i) % 360) }
@@ -121,20 +109,16 @@ let rec rotateWaypoint (state: StateTwo) (degrees: int) =
 
 let mul (a: Coords) (b: int) = { X = a.X * b; Y = a.Y * b }
 
+let moveWaypoint state c =
+    { state with
+          Waypoint = add state.Waypoint c }
+
 let reduce (state: StateTwo) (instr: Char * int) =
     match instr with
-    | 'N', i ->
-        { state with
-              Waypoint = add state.Waypoint (North i) }
-    | 'S', i ->
-        { state with
-              Waypoint = add state.Waypoint (South i) }
-    | 'E', i ->
-        { state with
-              Waypoint = add state.Waypoint (East i) }
-    | 'W', i ->
-        { state with
-              Waypoint = add state.Waypoint (West i) }
+    | 'N', i -> moveWaypoint state (North i)
+    | 'S', i -> moveWaypoint state (South i)
+    | 'E', i -> moveWaypoint state (East i)
+    | 'W', i -> moveWaypoint state (West i)
     | 'R', i -> rotateWaypoint state i
     | 'L', i -> rotateWaypoint state (0 - i)
     | 'F', i ->
