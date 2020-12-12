@@ -28,16 +28,22 @@ type ``Helpers`` () =
 
 type ``Part One`` () =
     [<Fact>]
+    let ``parses line`` () =
+        Input.exampleInput |> Common.nonEmptyLines |> Seq.head |> parseLine |> should equal ("F",10)
+        
+    [<Fact>]
     let ``solves example`` () =
-        solveOne Input.exampleInput |> should equal Input.exampleInput
+        let instructions = Input.exampleInput |> Common.nonEmptyLines |> Seq.map parseLine
+        solveOne instructions |> should equal 25
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput |> should equal Input.problemInput
+        let instructions = Input.problemInput |> Common.nonEmptyLines |> Seq.map parseLine
+        solveOne instructions |> should equal 1687
         
 type ``Part Two`` () =
     [<Fact>]
     let ``solves example`` () =
-        solveOne Input.exampleInput |> should equal Input.exampleInput
+        solveTwo Input.exampleInput |> should equal Input.exampleInput
     [<Fact>]
     let ``solves problem`` () =
         solveTwo Input.problemInput |> should equal Input.problemInput
