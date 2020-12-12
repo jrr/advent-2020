@@ -51,11 +51,58 @@ let rec go (state:ShipState) (instructions: (char*int) seq) =
 let abs (input:int) =
     Math.Abs(input)
     
-let manhattan (state)  =
-    (abs state.Coords.X) + (abs state.Coords.Y)
+let manhattan (coords) = (abs coords.X) + (abs coords.Y)
     
 let solveOne (instructions: (char*int) seq) =
-    go initialShipState instructions |> manhattan 
+    go initialShipState instructions |> (fun s -> manhattan s.Coords)
 
+type StateTwo = {ShipPos: Coords;Waypoint:Coords}
+let initialStateTwo = {ShipPos={X=0;Y=0};Waypoint={X=10;Y=1}}
+
+let quadrant (c:Coords) =
+    (if c.X > 0 then 1 else -1),(if c.Y > 0 then 1 else -1)
     
-let solveTwo (input: string) = input
+let rot90 (c:Coords) =
+    let q = quadrant c
+    let mx,my = match q with
+    | (1,1) -> (1,-1)
+    | (1,-1) -> (-1,-1)
+    | (-1,-1) -> (-1,1)
+    | (-1,1) -> (1,1)
+    {X=(abs c.Y) * mx;Y=(abs c.X) * my}
+    
+    
+let rotateWaypoint (state:StateTwo) (degrees:int) =
+    let dir = (degrees+360) % 360
+    match dir with
+    | 0 -> state
+    | 90 ->  {state with Waypoint= (state.Waypoint|> rot90)}
+    | 180 ->  {state with Waypoint= (state.Waypoint|> rot90|>rot90)}
+    | 270 ->  {state with Waypoint= (state.Waypoint|> rot90|>rot90|>rot90)}
+    
+let mul (a:Coords) (b:int) = {X=a.X*b;Y=a.Y*b}
+
+let reduce (state:StateTwo) (instr:Char*int) =
+    match instr with
+    | 'N',i -> {state with Waypoint= add state.Waypoint {X=0;Y=i}}
+    | 'S',i -> {state with Waypoint= add state.Waypoint {X=0;Y=0-i}}
+    | 'E',i -> {state with Waypoint= add state.Waypoint {X=i;Y=0}}
+    | 'W',i -> {state with Waypoint= add state.Waypoint {X=0-i;Y=0}}
+    | 'R',i -> rotateWaypoint state i
+    | 'L',i -> rotateWaypoint state (0-i)
+    | 'F',i -> {state with ShipPos = add state.ShipPos (mul state.Waypoint i)}
+    | _-> failwith "bonk"
+    
+    
+let rec go2 (state:StateTwo) (instructions: (char*int) seq) =
+    let tail = instructions |> Seq.tail
+    
+    match instructions |> Seq.tryHead with
+    | None -> state
+    | Some instr-> go2 (reduce state instr) tail
+    
+    
+    
+let solveTwo (instructions: (char*int) seq) = 
+    let endState = go2 initialStateTwo instructions
+    endState |> (fun s -> manhattan s.ShipPos)

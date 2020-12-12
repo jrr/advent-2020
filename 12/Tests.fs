@@ -33,17 +33,34 @@ type ``Part One`` () =
         
     [<Fact>]
     let ``solves example`` () =
-        let instructions = Input.exampleInput |> Common.nonEmptyLines |> Seq.map parseLine
-        solveOne instructions |> should equal 25
+        Input.exampleInput |> Common.nonEmptyLines |> Seq.map parseLine
+            |>solveOne |> should equal 25
     [<Fact>]
     let ``solves problem`` () =
-        let instructions = Input.problemInput |> Common.nonEmptyLines |> Seq.map parseLine
-        solveOne instructions |> should equal 1687
+        Input.problemInput |> Common.nonEmptyLines |> Seq.map parseLine
+            |> solveOne |> should equal 1687
         
 type ``Part Two`` () =
     [<Fact>]
+    let ``reduce 1`` () =
+        reduce initialStateTwo ('F',10) |> should equal {initialStateTwo with ShipPos={X=100;Y=10}}
+        
+    [<Fact>]
+    let ``reduce 2`` () =
+        reduce {ShipPos={X=100;Y=10};Waypoint={X=10;Y=1}} ('N',3) |> should equal {ShipPos={X=100;Y=10};Waypoint={X=10;Y=4}}
+    [<Fact>]
+    let ``rot90`` () =
+        rot90 {X=10;Y=4} |> should equal {X=4;Y=0-10}
+        rot90 {X=1;Y=0-2} |> should equal {X=0-2;Y=0-1}
+        
+    [<Fact>]
+    let ``reduce 3`` () =
+        reduce {ShipPos={X=100;Y=10};Waypoint={X=10;Y=4}} ('R',90) |> should equal {ShipPos={X=100;Y=10};Waypoint={X=4;Y=0-10}}
+        
+    [<Fact>]
     let ``solves example`` () =
-        solveTwo Input.exampleInput |> should equal Input.exampleInput
+        Input.exampleInput |> Common.nonEmptyLines |> Seq.map parseLine |> solveTwo |> should equal 286
+        
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput |> should equal Input.problemInput
+        Input.problemInput |> Common.nonEmptyLines |> Seq.map parseLine |> solveTwo |> should equal 20873
