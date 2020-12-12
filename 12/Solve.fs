@@ -2,9 +2,6 @@ module Solve
 
 open System
 
-let solve (input: string) = input
-
-
 type Coords = { X: int; Y: int }
 
 open System.Text.RegularExpressions
@@ -112,20 +109,15 @@ let rot90 (c: Coords) =
       Y = (abs c.X) * my }
 
 
-let rotateWaypoint (state: StateTwo) (degrees: int) =
+let rec rotateWaypoint (state: StateTwo) (degrees: int) =
     let dir = (degrees + 360) % 360
     match dir with
     | 0 -> state
-    | 90 ->
-        { state with
-              Waypoint = (state.Waypoint |> rot90) }
-    | 180 ->
-        { state with
-              Waypoint = (state.Waypoint |> rot90 |> rot90) }
-    | 270 ->
-        { state with
-              Waypoint = (state.Waypoint |> rot90 |> rot90 |> rot90) }
-    | _ -> failwith "unhandled direction"
+    | n ->
+        rotateWaypoint
+            { state with
+                  Waypoint = (state.Waypoint |> rot90) }
+            (dir - 90)
 
 let mul (a: Coords) (b: int) = { X = a.X * b; Y = a.Y * b }
 

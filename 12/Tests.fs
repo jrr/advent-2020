@@ -5,28 +5,8 @@ open Xunit
 open FsUnit.Xunit
 open Solve
 
-[<Fact>]
-let ``solves problem`` () = solve "foo" |> should equal "foo"
-
-
-
 type Helpers() =
 
-    [<Fact>]
-    let ``reads lines of text`` () =
-        Input.inputLines
-        |> Common.nonEmptyLines
-        |> Seq.length
-        |> should greaterThan 3
-
-    [<Fact>]
-    let ``reads groups of lines of text`` () =
-        Input.inputGroups
-        |> Common.lineGroups
-        |> Seq.length
-        |> should equal 2
-
-type ``Part One``() =
     [<Fact>]
     let ``parses line`` () =
         Input.exampleInput
@@ -34,6 +14,15 @@ type ``Part One``() =
         |> Seq.head
         |> parseLine
         |> should equal ('F', 10)
+
+    [<Fact>]
+    let rot90 () =
+        rot90 { X = 10; Y = 4 }
+        |> should equal { X = 4; Y = 0 - 10 }
+        rot90 { X = 1; Y = 0 - 2 }
+        |> should equal { X = 0 - 2; Y = 0 - 1 }
+
+type ``Part One``() =
 
     [<Fact>]
     let ``solves example`` () =
@@ -71,12 +60,6 @@ type ``Part Two``() =
                { ShipPos = { X = 100; Y = 10 }
                  Waypoint = { X = 10; Y = 4 } }
 
-    [<Fact>]
-    let rot90 () =
-        rot90 { X = 10; Y = 4 }
-        |> should equal { X = 4; Y = 0 - 10 }
-        rot90 { X = 1; Y = 0 - 2 }
-        |> should equal { X = 0 - 2; Y = 0 - 1 }
 
     [<Fact>]
     let ``reduce 3`` () =
