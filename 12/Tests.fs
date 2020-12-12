@@ -29,7 +29,7 @@ type ``Helpers`` () =
 type ``Part One`` () =
     [<Fact>]
     let ``parses line`` () =
-        Input.exampleInput |> Common.nonEmptyLines |> Seq.head |> parseLine |> should equal ("F",10)
+        Input.exampleInput |> Common.nonEmptyLines |> Seq.head |> parseLine |> should equal ('F',10)
         
     [<Fact>]
     let ``solves example`` () =
