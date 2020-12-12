@@ -1,2 +1,2 @@
-
-- better text parsing. regex match patterns from 04?
+- move regex stuff to common, add a template example
+- common reducer / match pattern template (like in 12)
