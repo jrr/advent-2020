@@ -48,35 +48,53 @@ let solveOne (input: ProblemInput) =
         |> Seq.sortBy snd
         |> Seq.head
 
-    (busId,departureTime)
+    (busId, departureTime)
     let minutesToWait = departureTime - input.earliestDeparture
     minutesToWait * busId
 
-type BusPosition = {Position:int;BusId:int}
+type BusPosition = { Position: int; BusId: int }
+
 let busPositions input =
-    input.buses |> List.mapi (fun i a -> (i,a)) |> List.choose(fun (i,x) ->
+    input.buses
+    |> List.mapi (fun i a -> (i, a))
+    |> List.choose (fun (i, x) ->
         match x with
         | OutOfService -> None
-        | BusId n -> Some {Position =i;BusId=n})
+        | BusId n -> Some { Position = i; BusId = n })
+
 let infiniteCount = Seq.initInfinite id |> Seq.map int64
 
-let countBy n = Seq.initInfinite (fun i -> (int64 n) * (int64 i))
+let countBy n =
+    Seq.initInfinite (fun i -> (int64 n) * (int64 i))
 
-let testTimestamp (n:int64) (buses:BusPosition list)=
-    buses |> Seq.map (fun bus -> (n + (int64 bus.Position) ) % (int64 bus.BusId) = 0L) |> Seq.reduce (&&)
-    
+let testTimestamp (n: int64) (buses: BusPosition list) =
+    buses
+    |> Seq.map (fun bus -> (n + (int64 bus.Position)) % (int64 bus.BusId) = 0L)
+    |> Seq.reduce (&&)
+
 let solveTwo (input: ProblemInput) =
     let buses = busPositions input
-    let largestBusId = buses |> Seq.map (fun b -> b.BusId) |> Seq.max
-    
-    let result =
-                 infiniteCount
-//                 countBy largestBusId
-                 |> Seq.mapi (fun i x ->
-                     if i % 100000 = 0 then printfn "%d ..." i else ()
-                     x )
-//                 |> Seq.map (fun i -> i - large)
-                 |> Seq.find (fun n -> testTimestamp n buses)
-    
-    result
 
+    let largestBusIdBus =
+        buses
+        |> Seq.sortBy (fun b -> b.BusId)
+        |> Seq.rev
+        |> Seq.head
+
+    printfn "Largest busId is %d as position %d" largestBusIdBus.BusId largestBusIdBus.Position
+
+    let cheaperSequence =
+        // optimization: an infinite sequence of numbers that we know matches for the largest busId
+        countBy largestBusIdBus.BusId
+        |> Seq.map (fun i -> i - (int64 largestBusIdBus.Position))
+
+    let result =
+        //                 infiniteCount // counted 1068781 times to get answer 1068781
+        cheaperSequence // counted 18115 times to get answer 1068781
+        |> Seq.mapi (fun i x ->
+            if i % 100000 = 0 then printfn "%d ..." i else ()
+            i, x)
+        |> Seq.find (fun (_, n) -> testTimestamp n buses)
+
+    printfn "counted %d times to get answer %d" (fst result) (snd result)
+    snd result

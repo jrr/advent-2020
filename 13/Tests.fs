@@ -76,8 +76,9 @@ type ``Part Two``() =
         |> solveTwo
         |> should equal 1068781L
 
-    [<Fact(Skip="too slow")>]
+    [<Fact(Skip = "too slow")>]
     let ``solves problem`` () =
+        // definitely larger than 1516900000
         Input.problemInput
         |> parse
         |> solveTwo
