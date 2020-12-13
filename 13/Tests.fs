@@ -5,10 +5,6 @@ open Xunit
 open FsUnit.Xunit
 open Solve
 
-[<Fact>]
-let ``solves problem`` () = solve "foo" |> should equal "foo"
-
-
 
 type ``Helpers`` () =
     
