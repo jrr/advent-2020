@@ -52,4 +52,21 @@ let solveOne (input: ProblemInput) =
     let minutesToWait = departureTime - input.earliestDeparture
     minutesToWait * busId
 
-let solveTwo (input: ProblemInput) = input
+type BusPosition = {Position:int;BusId:int}
+let busPositions input =
+    input.buses |> List.mapi (fun i a -> (i,a)) |> List.choose(fun (i,x) ->
+        match x with
+        | OutOfService -> None
+        | BusId n -> Some {Position =i;BusId=n})
+let infiniteCount = Seq.initInfinite id
+
+let testTimestamp n (buses:BusPosition list) (lowestBusPosition:int) =
+    buses |> Seq.map (fun bus -> (n + bus.Position ) % bus.BusId = 0) |> Seq.reduce (&&)
+    
+let solveTwo (input: ProblemInput) =
+    let buses = busPositions input
+    let lowestBusPosition = buses |> List.map (fun b ->b.Position) |> List.min
+    let result = infiniteCount |> Seq.find (fun n -> testTimestamp n buses lowestBusPosition)
+    
+    result
+
