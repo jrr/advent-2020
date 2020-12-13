@@ -32,7 +32,7 @@ type ``Part One`` () =
         Input.exampleInput |> parse |> solveOne |> should equal 295
     [<Fact>]
     let ``solves problem`` () =
-        Input.problemInput |> parse |> solveOne |> should equal 0
+        Input.problemInput |> parse |> solveOne |> should equal 104
         
 type ``Part Two`` () =
     [<Fact>]
