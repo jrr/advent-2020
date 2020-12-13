@@ -74,9 +74,9 @@ type ``Part Two``() =
         Input.exampleInput
         |> parse
         |> solveTwo
-        |> should equal 1068781
+        |> should equal 1068781L
 
-    [<Fact>]
+    [<Fact(Skip="too slow")>]
     let ``solves problem`` () =
         Input.problemInput
         |> parse

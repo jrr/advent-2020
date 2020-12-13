@@ -58,15 +58,25 @@ let busPositions input =
         match x with
         | OutOfService -> None
         | BusId n -> Some {Position =i;BusId=n})
-let infiniteCount = Seq.initInfinite id
+let infiniteCount = Seq.initInfinite id |> Seq.map int64
 
-let testTimestamp n (buses:BusPosition list) (lowestBusPosition:int) =
-    buses |> Seq.map (fun bus -> (n + bus.Position ) % bus.BusId = 0) |> Seq.reduce (&&)
+let countBy n = Seq.initInfinite (fun i -> (int64 n) * (int64 i))
+
+let testTimestamp (n:int64) (buses:BusPosition list)=
+    buses |> Seq.map (fun bus -> (n + (int64 bus.Position) ) % (int64 bus.BusId) = 0L) |> Seq.reduce (&&)
     
 let solveTwo (input: ProblemInput) =
     let buses = busPositions input
-    let lowestBusPosition = buses |> List.map (fun b ->b.Position) |> List.min
-    let result = infiniteCount |> Seq.find (fun n -> testTimestamp n buses lowestBusPosition)
+    let largestBusId = buses |> Seq.map (fun b -> b.BusId) |> Seq.max
+    
+    let result =
+                 infiniteCount
+//                 countBy largestBusId
+                 |> Seq.mapi (fun i x ->
+                     if i % 100000 = 0 then printfn "%d ..." i else ()
+                     x )
+//                 |> Seq.map (fun i -> i - large)
+                 |> Seq.find (fun n -> testTimestamp n buses)
     
     result
 
