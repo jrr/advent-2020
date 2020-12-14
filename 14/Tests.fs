@@ -43,9 +43,9 @@ type Helpers() =
 
     [<Fact>]
     let ``applies mask`` () =
-        applyValueMaskInner 11UL "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
+        computeValueMask 11UL "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
         |> should equal 73UL
-        applyValueMaskInner 00UL "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
+        computeValueMask 00UL "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
         |> should equal 64UL
 
     [<Fact>]

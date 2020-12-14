@@ -13,14 +13,14 @@ let parseBinary (input: string) = Convert.ToUInt64(input, 2)
 
 // ==== 14A - the mask is applied to values ====
 
-let applyValueMaskInner (value: uint64) (mask: string) =
+let computeValueMask (value: uint64) (mask: string) =
     let orMask = mask.Replace('X', '0') |> parseBinary
     let andMask = mask.Replace('X', '1') |> parseBinary
     (value &&& andMask) ||| orMask
 
 let applyValueMask (input: MaskWithWrite) =
     let masked =
-        applyValueMaskInner input.Write.Value input.Mask
+        computeValueMask input.Write.Value input.Mask
 
     [ { input.Write with Value = masked } ]
 
