@@ -30,6 +30,10 @@ open System
 
 let parseBinary (input: string) = Convert.ToUInt64(input, 2)
 
+let printBinary (value:uint64) =
+    let range = seq {0..63} |> Seq.rev
+    range |> Seq.map (fun n -> if (1UL <<< n) &&& value = 0UL then '0' else '1') |> String.Concat
+
 
 
 let rec distributeMasksRec (input: ParsedLine seq) (currentMask: string) =
@@ -57,8 +61,36 @@ let applyValueMasks (input:MaskWithWrite seq) = input |> Seq.map applyValueMask
 let reduceWrites (input: Write seq) =
     input |> Seq.rev |> Seq.distinctBy (fun w -> w.Address)|> Seq.rev
 
+let rec applyFloaters (value:uint64) (floaters:int list) =
+    match floaters |> List.tryHead with
+    | None -> [value]
+    | Some bit ->
+        let onMask = 1UL<<<bit
+        let offMask = ~~~ onMask
+        
+        let left = (value ||| onMask)
+        let right = (value &&& offMask)
+        let what = [left;right] |> List.map (fun v ->
+            let tail = floaters |> List.tail
+            applyFloaters v tail
+            )
+        what |> List.concat
+        
+let applyAddressMask (input:MaskWithWrite) : Write seq=
+    let orMask = input.Mask.Replace('X','0') |> parseBinary
+    let applied = input.Write.Address ||| orMask
+    let floatingBits = input.Mask
+                       |> Seq.rev
+                       |> Seq.mapi (fun i c -> i,c)
+                       |> Seq.filter(fun (_,c) ->
+                            c = 'X'
+                            )
+                       |> Seq.map fst |> List.ofSeq
+    let result = applyFloaters applied floatingBits
+    result |> Seq.map (fun f -> {Address=f;Value=input.Write.Value}) |> Seq.sortBy (fun a -> a.Address)
+    
 let applyAddressMasks (input:MaskWithWrite seq) : Write seq=
-    seq []
+    input |> Seq.map applyAddressMask |> Seq.concat
 
 let solveOne (input: string) =
     input

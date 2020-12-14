@@ -36,6 +36,9 @@ type Helpers() =
 
     [<Fact>]
     let ``parses binary`` () = "101" |> parseBinary |> should equal 5UL
+    
+    [<Fact>]
+    let ``prints binary`` () = 5UL |> printBinary |> should endWith "0101"
 
     [<Fact>]
     let ``applies mask`` () =
@@ -45,21 +48,44 @@ type Helpers() =
         |> should equal 64UL
 
     [<Fact>]
-    let ``applies masks`` () =
+    let ``applies value masks`` () =
         Input.exampleInput
         |> parse
         |> distributeMasks
         |> applyValueMasks
         |> Seq.toList
-        |> should equal [{Address=8UL;Value=73UL};{Address=7UL;Value=101UL};{Address=8UL;Value=64UL}]
+        |> should
+            equal
+               [ { Address = 8UL; Value = 73UL }
+                 { Address = 7UL; Value = 101UL }
+                 { Address = 8UL; Value = 64UL } ]
 
     [<Fact>]
     let ``reduces redundant writes`` () =
-        [{Address=8UL;Value=73UL};{Address=7UL;Value=101UL};{Address=8UL;Value=64UL}]
+        [ { Address = 8UL; Value = 73UL }
+          { Address = 7UL; Value = 101UL }
+          { Address = 8UL; Value = 64UL } ]
         |> reduceWrites
         |> Seq.toList
-        |> should equal [{Address=7UL;Value=101UL};{Address=8UL;Value=64UL}]
+        |> should
+            equal
+               [ { Address = 7UL; Value = 101UL }
+                 { Address = 8UL; Value = 64UL } ]
 
+    [<Fact>]
+    let ``applies address mask`` () =
+        { Mask = "000000000000000000000000000000X1001X"
+          Write = { Address = 42UL; Value = 100UL } }
+        |> applyAddressMask
+        |> Seq.map (fun x -> x.Address)
+//        |> Seq.map (printBinary)
+        |> List.ofSeq
+        |> should
+            equal
+               [  26UL
+                  27UL
+                  58UL
+                  59UL ]
 
 type ``Part One``() =
     [<Fact>]
@@ -74,10 +100,8 @@ type ``Part One``() =
 type ``Part Two``() =
     [<Fact>]
     let ``solves example`` () =
-        solveOne Input.exampleInput
-        |> should equal Input.exampleInput
+        solveTwo Input.exampleInput14b |> should equal 208UL
 
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput
-        |> should equal Input.problemInput
+        solveTwo Input.problemInput |> should equal 4335927555692UL
