@@ -66,49 +66,31 @@ let infiniteCount = Seq.initInfinite id |> Seq.map int64
 
 let countBy n =
     Seq.initInfinite (fun i -> (int64 n) * (int64 i))
+    
+let countFromBy a b =
+    Seq.initInfinite (fun i -> (int64 a) + (int64 i)*(int64 b))
 
 let testTimestamp (n: int64) (buses: BusPosition list) =
     buses
     |> Seq.map (fun bus -> (n + (int64 bus.Position)) % (int64 bus.BusId) = 0L)
     |> Seq.reduce (&&)
 
+let rec search (buses:BusPosition list) (start:int64) (interval:int64) =
+    if buses |> List.isEmpty then
+        start
+    else
+        let bus::tail = buses
+        let result = countFromBy start interval |> Seq.find (fun i -> (i + (int64 bus.Position)) % (int64 bus.BusId) = 0L)
+        
+        let newInterval = interval * (int64 bus.BusId)
+        printfn "found time for bus %i. interval %i * %i = %i" bus.BusId interval bus.BusId newInterval
+        search tail result newInterval
+    
 let solveTwo (input: ProblemInput) =
     let buses = busPositions input
+    
+    search buses 0L 1L
 
-    let largestBusIdBus =
-        buses
-        |> Seq.sortBy (fun b -> b.BusId)
-        |> Seq.rev
-        |> Seq.head
-
-    printfn "Largest busId is %d as position %d" largestBusIdBus.BusId largestBusIdBus.Position
-
-    let cheaperSequence =
-        // optimization: an infinite sequence of numbers that we know matches for the largest busId
-        countBy largestBusIdBus.BusId
-        |> Seq.map (fun i -> i - (int64 largestBusIdBus.Position))
-
-    (*
-        next try: take all the (busId - position)s, and compute the least common multiple of them.
-
-        LCM(a,b)
-            // 6 = 2 * 3
-            // 8 = 2 * 2 * 2
-            // LCM = 24 (2 * 2 * 2 * 3)
-            // ( remove from one set of factors, those the are in the other. then merge the lists)
-            (factors of a) (factors of b)
-    *)
-
-    let result =
-        //                 infiniteCount // counted 1068781 times to get answer 1068781
-        cheaperSequence // counted 18115 times to get answer 1068781
-        |> Seq.mapi (fun i x ->
-            if i % 100000 = 0 then printfn "%d ..." i else ()
-            i, x)
-        |> Seq.find (fun (_, n) -> testTimestamp n buses)
-
-    printfn "counted %d times to get answer %d" (fst result) (snd result)
-    snd result
 
 let rec innerFactor (n: int) (i: int) =
     if i > n / 2 then [ n ]
