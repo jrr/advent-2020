@@ -4,7 +4,7 @@ open Common
 
 type ParsedLine =
     | Mask of string
-    | Write of string * string
+    | Write of uint * uint64
 
 let parseLine (s: string) =
     //mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
@@ -13,7 +13,7 @@ let parseLine (s: string) =
     //mem[8] = 0
     match s with
     | Regex @"mask = ([01X]*)$" [ mask ] -> Mask mask
-    | Regex @"mem\[(\d)\] = (\d)" [ address; value ] -> Write(address, value)
+    | Regex @"mem\[(\d)\] = (\d+)" [ address; value ] -> Write(uint address, uint64 value)
     | x -> failwith $"parse error ({x})"
 
 let parse (input: string) =

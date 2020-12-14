@@ -30,9 +30,9 @@ type Helpers() =
         |> should
             equal
                [ Mask "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
-                 Write("8", "1")
-                 Write("7", "1")
-                 Write("8", "0") ]
+                 Write(8u, 11UL)
+                 Write(7u, 101UL)
+                 Write(8u, 0UL) ]
 
 type ``Part One``() =
     [<Fact>]
