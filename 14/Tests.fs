@@ -33,6 +33,16 @@ type Helpers() =
                  Write(8u, 11UL)
                  Write(7u, 101UL)
                  Write(8u, 0UL) ]
+               
+    [<Fact>]
+    let ``parses binary`` () =
+        "101" |> parseBinary |> should equal 5UL
+        
+    [<Fact>]
+    let ``applies mask`` () =
+        applyMask 11UL "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X" |> should equal 73UL
+        applyMask 00UL "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X" |> should equal 64UL
+        
 
 type ``Part One``() =
     [<Fact>]
