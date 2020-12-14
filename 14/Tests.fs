@@ -29,10 +29,10 @@ type Helpers() =
         |> List.ofSeq
         |> should
             equal
-               [ Mask "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
-                 Write(8u, 11UL)
-                 Write(7u, 101UL)
-                 Write(8u, 0UL) ]
+               [ MaskLine "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
+                 WriteLine { Address = 8u; Value = 11UL }
+                 WriteLine { Address = 7u; Value = 101UL }
+                 WriteLine { Address = 8u; Value = 0UL } ]
 
     [<Fact>]
     let ``parses binary`` () = "101" |> parseBinary |> should equal 5UL

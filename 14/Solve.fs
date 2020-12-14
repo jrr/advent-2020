@@ -1,10 +1,14 @@
 module Solve
 
+open System.Net.Sockets
 open Common
 
+type Write = { Address: uint; Value: uint64 }
+type MaskWithWrite = { Mask: string; Write: Write } // todo: uint64 for addresses too
+
 type ParsedLine =
-    | Mask of string
-    | Write of uint * uint64
+    | MaskLine of string
+    | WriteLine of Write
 
 let parseLine (s: string) =
     //mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
@@ -12,8 +16,11 @@ let parseLine (s: string) =
     //mem[7] = 101
     //mem[8] = 0
     match s with
-    | Regex @"mask = ([01X]*)$" [ mask ] -> Mask mask
-    | Regex @"mem\[(\d+)\] = (\d+)" [ address; value ] -> Write(uint address, uint64 value)
+    | Regex @"mask = ([01X]*)$" [ mask ] -> MaskLine mask
+    | Regex @"mem\[(\d+)\] = (\d+)" [ address; value ] ->
+        WriteLine
+            { Address = uint address
+              Value = uint64 value }
     | x -> failwith $"parse error ({x})"
 
 let parse (input: string) =
@@ -28,13 +35,14 @@ let applyMask (value: uint64) (mask: string) =
     let andMask = mask.Replace('X', '1') |> parseBinary
     (value &&& andMask) ||| orMask
 
+
 let rec applyMasksToLinesInner (input: ParsedLine seq) (currentMask: string) =
     let head = input |> Seq.tryHead
     match head with
     | None -> []
-    | Some (Mask m) -> applyMasksToLinesInner (input |> Seq.tail) m
-    | Some (Write (a, b)) ->
-        (a, (applyMask b currentMask))
+    | Some (MaskLine m) -> applyMasksToLinesInner (input |> Seq.tail) m
+    | Some (WriteLine w) ->
+        (w.Address, (applyMask w.Value currentMask))
         :: (applyMasksToLinesInner (input |> Seq.tail) currentMask)
 
 
@@ -42,6 +50,12 @@ let applyMasksToLines (input: ParsedLine seq) = applyMasksToLinesInner input "X"
 
 let reduceWrites (input: (uint * uint64) seq) =
     input |> Seq.rev |> Seq.distinctBy fst |> Seq.rev
+
+//let expandAddressesInner (input: ParsedLine seq) =
+let expandAddresses (input: ParsedLine seq) =
+
+
+    [ (0 |> uint, 0UL) ]
 
 let solveOne (input: string) =
     input
@@ -51,4 +65,11 @@ let solveOne (input: string) =
     |> Seq.map snd
     |> Seq.sum
 
-let solveTwo (input: string) = input
+let solveTwo (input: string) =
+
+    input
+    |> parse
+    |> expandAddresses
+    |> reduceWrites
+    |> Seq.map snd
+    |> Seq.sum
