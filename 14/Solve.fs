@@ -3,8 +3,8 @@ module Solve
 open System.Net.Sockets
 open Common
 
-type Write = { Address: uint; Value: uint64 }
-type MaskWithWrite = { Mask: string; Write: Write } // todo: uint64 for addresses too
+type Write = { Address: uint64; Value: uint64 }
+type MaskWithWrite = { Mask: string; Write: Write }
 
 type ParsedLine =
     | MaskLine of string
@@ -19,7 +19,7 @@ let parseLine (s: string) =
     | Regex @"mask = ([01X]*)$" [ mask ] -> MaskLine mask
     | Regex @"mem\[(\d+)\] = (\d+)" [ address; value ] ->
         WriteLine
-            { Address = uint address
+            { Address = uint64 address
               Value = uint64 value }
     | x -> failwith $"parse error ({x})"
 
@@ -30,46 +30,51 @@ open System
 
 let parseBinary (input: string) = Convert.ToUInt64(input, 2)
 
-let applyMask (value: uint64) (mask: string) =
-    let orMask = mask.Replace('X', '0') |> parseBinary
-    let andMask = mask.Replace('X', '1') |> parseBinary
-    (value &&& andMask) ||| orMask
 
 
-let rec applyMasksToLinesInner (input: ParsedLine seq) (currentMask: string) =
+let rec distributeMasksRec (input: ParsedLine seq) (currentMask: string) =
     let head = input |> Seq.tryHead
     match head with
     | None -> []
-    | Some (MaskLine m) -> applyMasksToLinesInner (input |> Seq.tail) m
+    | Some (MaskLine m) -> distributeMasksRec (input |> Seq.tail) m
     | Some (WriteLine w) ->
-        (w.Address, (applyMask w.Value currentMask))
-        :: (applyMasksToLinesInner (input |> Seq.tail) currentMask)
+        {Mask = currentMask;Write = w} :: (distributeMasksRec (input |> Seq.tail) currentMask)
+let distributeMasks (input: ParsedLine seq) =
+    distributeMasksRec input "X"
 
 
-let applyMasksToLines (input: ParsedLine seq) = applyMasksToLinesInner input "X"
+let applyValueMaskInner (value: uint64) (mask: string) =
+    let orMask = mask.Replace('X', '0') |> parseBinary
+    let andMask = mask.Replace('X', '1') |> parseBinary
+    (value &&& andMask) ||| orMask
+    
+let applyValueMask (input: MaskWithWrite ) =
+    let masked = applyValueMaskInner input.Write.Value input.Mask
+    {input.Write with Value = masked}
 
-let reduceWrites (input: (uint * uint64) seq) =
-    input |> Seq.rev |> Seq.distinctBy fst |> Seq.rev
+let applyValueMasks (input:MaskWithWrite seq) = input |> Seq.map applyValueMask
 
-//let expandAddressesInner (input: ParsedLine seq) =
-let expandAddresses (input: ParsedLine seq) =
+let reduceWrites (input: Write seq) =
+    input |> Seq.rev |> Seq.distinctBy (fun w -> w.Address)|> Seq.rev
 
-
-    [ (0 |> uint, 0UL) ]
+let applyAddressMasks (input:MaskWithWrite seq) : Write seq=
+    seq []
 
 let solveOne (input: string) =
     input
     |> parse
-    |> applyMasksToLines
+    |> distributeMasks
+    |> applyValueMasks
     |> reduceWrites
-    |> Seq.map snd
+    |> Seq.map (fun w -> w.Value)
     |> Seq.sum
 
 let solveTwo (input: string) =
 
     input
     |> parse
-    |> expandAddresses
+    |> distributeMasks
+    |> applyAddressMasks
     |> reduceWrites
-    |> Seq.map snd
+    |> Seq.map (fun w -> w.Value)
     |> Seq.sum

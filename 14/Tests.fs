@@ -30,34 +30,35 @@ type Helpers() =
         |> should
             equal
                [ MaskLine "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
-                 WriteLine { Address = 8u; Value = 11UL }
-                 WriteLine { Address = 7u; Value = 101UL }
-                 WriteLine { Address = 8u; Value = 0UL } ]
+                 WriteLine { Address = 8UL; Value = 11UL }
+                 WriteLine { Address = 7UL; Value = 101UL }
+                 WriteLine { Address = 8UL; Value = 0UL } ]
 
     [<Fact>]
     let ``parses binary`` () = "101" |> parseBinary |> should equal 5UL
 
     [<Fact>]
     let ``applies mask`` () =
-        applyMask 11UL "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
+        applyValueMaskInner 11UL "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
         |> should equal 73UL
-        applyMask 00UL "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
+        applyValueMaskInner 00UL "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
         |> should equal 64UL
 
     [<Fact>]
     let ``applies masks`` () =
         Input.exampleInput
         |> parse
-        |> applyMasksToLines
+        |> distributeMasks
+        |> applyValueMasks
         |> Seq.toList
-        |> should equal [ (8u, 73UL); (7u, 101UL); (8u, 64UL) ]
+        |> should equal [{Address=8UL;Value=73UL};{Address=7UL;Value=101UL};{Address=8UL;Value=64UL}]
 
     [<Fact>]
     let ``reduces redundant writes`` () =
-        [ (8u, 73UL); (7u, 101UL); (8u, 64UL) ]
+        [{Address=8UL;Value=73UL};{Address=7UL;Value=101UL};{Address=8UL;Value=64UL}]
         |> reduceWrites
         |> Seq.toList
-        |> should equal [ (7u, 101UL); (8u, 64UL) ]
+        |> should equal [{Address=7UL;Value=101UL};{Address=8UL;Value=64UL}]
 
 
 type ``Part One``() =
