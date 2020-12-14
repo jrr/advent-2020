@@ -36,9 +36,10 @@ type Helpers() =
 
     [<Fact>]
     let ``parses binary`` () = "101" |> parseBinary |> should equal 5UL
-    
+
     [<Fact>]
-    let ``prints binary`` () = 5UL |> printBinary |> should endWith "0101"
+    let ``prints binary`` () =
+        5UL |> printBinary |> should endWith "0101"
 
     [<Fact>]
     let ``applies mask`` () =
@@ -49,11 +50,16 @@ type Helpers() =
 
     [<Fact>]
     let ``applies value masks`` () =
-        Input.exampleInput
-        |> parse
-        |> distributeMasks
-        |> applyValueMasks
-        |> Seq.toList
+
+        [ { Mask = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
+            Write = { Address = 8UL; Value = 11UL } }
+          { Mask = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
+            Write = { Address = 7UL; Value = 101UL } }
+          { Mask = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X"
+            Write = { Address = 8UL; Value = 0UL } } ]
+
+        |> List.map applyValueMask
+        |> List.concat
         |> should
             equal
                [ { Address = 8UL; Value = 73UL }
@@ -78,14 +84,8 @@ type Helpers() =
           Write = { Address = 42UL; Value = 100UL } }
         |> applyAddressMask
         |> Seq.map (fun x -> x.Address)
-//        |> Seq.map (printBinary)
         |> List.ofSeq
-        |> should
-            equal
-               [  26UL
-                  27UL
-                  58UL
-                  59UL ]
+        |> should equal [ 26UL; 27UL; 58UL; 59UL ]
 
 type ``Part One``() =
     [<Fact>]
@@ -100,8 +100,10 @@ type ``Part One``() =
 type ``Part Two``() =
     [<Fact>]
     let ``solves example`` () =
-        solveTwo Input.exampleInput14b |> should equal 208UL
+        solveTwo Input.exampleInput14b
+        |> should equal 208UL
 
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput |> should equal 4335927555692UL
+        solveTwo Input.problemInput
+        |> should equal 4335927555692UL
