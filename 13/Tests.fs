@@ -39,6 +39,23 @@ type Helpers() =
                        BusId 31
                        BusId 19 ] }
 
+    [<Fact>]
+    let factors () =
+        6 |> factor |> should equal [ 2; 3 ]
+        8 |> factor |> should equal [ 2; 2; 2 ]
+        11 |> factor |> should equal [11]
+        120 |> factor |> should equal [2;2;2;3;5]
+        
+    [<Fact>]
+    let ``union of two lists`` () =
+        mergeFactors [1;2;3] [2;3;4] |> Seq.toList |> should equal [1;2;3;4]
+        mergeFactors [1;2;3] [2;2;5] |> Seq.toList |> should equal [1;2;2;3;5]
+        
+    [<Fact>]
+    let ``determines LCM`` () =
+        leastCommonMultiple 6 8 |> should equal 24
+        ()
+
 type ``Part One``() =
     [<Fact>]
     let ``solves example`` () =

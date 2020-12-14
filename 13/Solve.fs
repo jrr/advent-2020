@@ -88,6 +88,17 @@ let solveTwo (input: ProblemInput) =
         countBy largestBusIdBus.BusId
         |> Seq.map (fun i -> i - (int64 largestBusIdBus.Position))
 
+    (*
+        next try: take all the (busId - position)s, and compute the least common multiple of them.
+
+        LCM(a,b)
+            // 6 = 2 * 3
+            // 8 = 2 * 2 * 2
+            // LCM = 24 (2 * 2 * 2 * 3)
+            // ( remove from one set of factors, those the are in the other. then merge the lists)
+            (factors of a) (factors of b)
+    *)
+
     let result =
         //                 infiniteCount // counted 1068781 times to get answer 1068781
         cheaperSequence // counted 18115 times to get answer 1068781
@@ -98,3 +109,25 @@ let solveTwo (input: ProblemInput) =
 
     printfn "counted %d times to get answer %d" (fst result) (snd result)
     snd result
+
+let rec innerFactor (n: int) (i: int) =
+    if i > n / 2 then [ n ]
+    else if n % i = 0 then i :: innerFactor (n / i) i
+    else innerFactor n (i + 1)
+
+
+let factor (n: int) = innerFactor n 2
+
+
+let mergeFactors (a:int seq) (b:int seq) =
+    let allDigits = (Seq.append a b) |> Seq.distinct
+    allDigits |> Seq.map (fun i ->
+        let countA = a |> Seq.filter(fun x -> x = i)  |> Seq.length
+        let countB = b |> Seq.filter(fun x -> x = i) |> Seq.length
+        Seq.replicate (max countA countB) i
+        ) |> Seq.concat
+    
+let leastCommonMultiple (a:int) (b:int) =
+    let factorsA = factor a
+    let factorsB = factor b
+    mergeFactors factorsA factorsB |> Seq.reduce (*)
