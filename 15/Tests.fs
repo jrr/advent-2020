@@ -21,6 +21,10 @@ type ``Helpers`` () =
         |> Common.lineGroups
         |> Seq.length
         |> should equal 2
+        
+    [<Fact>]
+    let ``vanEck`` () =
+        ecK () |> Seq.take 5 |> List.ofSeq |> should equal [0; 0; 1; 0; 2]
 
 type ``Part One`` () =
     [<Fact>]
@@ -49,7 +53,8 @@ type ``Part One`` () =
 type ``Part Two`` () =
     [<Fact>]
     let ``solves example`` () =
-        solveTwo Input.exampleInput |> should equal Input.exampleInput
-    [<Fact>]
-    let ``solves problem`` () =
-        solveTwo Input.problemInput |> should equal Input.problemInput
+        [0;3;6] |> solveTwo |> should equal 175594
+        
+//    [<Fact>]
+//    let ``solves problem`` () =
+//        solveTwo Input.problemInput |> should equal Input.problemInput
