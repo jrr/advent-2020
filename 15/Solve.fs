@@ -1,41 +1,39 @@
 module Solve
 
+type MutableDictionary = System.Collections.Generic.Dictionary<int, int>
 
-let tryGet (dict: System.Collections.Generic.Dictionary<int, int>) key =
+let newDict (s: Map<int, int>) =
+    System.Collections.Generic.Dictionary<int, int>(s)
+
+let tryGet (dict: MutableDictionary) key =
     if dict.ContainsKey key then Some dict.[key] else None
 
-
-
-let rec solve3inner (dict: System.Collections.Generic.Dictionary<int, int>) (turn: int) (current: int) =
+let rec vanEckInner (dict: MutableDictionary) (turn: int) (current: int) =
     seq {
-        let prevUse = tryGet dict current
+        yield current
 
-        let newCurrent =
-            match prevUse with
+        let newValue =
+            match tryGet dict current with
             | Some prev -> turn - prev
             | None -> 0
 
         dict.[current] <- turn
-        yield current
-        yield! solve3inner dict (turn + 1) newCurrent
+        yield! vanEckInner dict (turn + 1) newValue
     }
 
 let vanEckSeq (input: int list) =
-
     seq {
-
-        let seed =
-            input
-            |> Seq.mapi (fun i num -> num, i + 1)
-            |> Map.ofSeq
-
         for item in input do
             yield item
 
-        let dict =
-            System.Collections.Generic.Dictionary<int, int>(seed)
+        let seed =
+            (input
+             |> Seq.mapi (fun i num -> num, i + 1)
+             |> Map.ofSeq)
 
-        yield! solve3inner dict (input.Length + 1) 0 (* is that right? *)
+        let dict = newDict seed
+
+        yield! vanEckInner dict (input.Length + 1) 0 (* is that right? *)
     }
 
 let getNth (input: int list) (num: int) =

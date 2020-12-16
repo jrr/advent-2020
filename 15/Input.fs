@@ -1,24 +1,5 @@
 module Input
 
-let inputLines = """foobar
-these
-are
-individual
-lines
-"""
+let exampleInput = [ 0; 3; 6 ]
 
-let inputGroups = """
-this is
-a group
-
-and this is
-another one
-"""
-
-let exampleInput = """
-foo
-"""
-
-let problemInput = """
-bar
-"""
+let problemInput = [ 14; 8; 16; 0; 1; 17 ]
