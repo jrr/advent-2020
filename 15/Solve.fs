@@ -9,7 +9,7 @@ let rec recSeq (input: int list) =
             | Some previousUse -> previousUse + 1
             | None -> 0
 
-        printfn "next %d" next
+//        printfn "next %d" next
         yield next
         yield! recSeq (next :: input)
     }

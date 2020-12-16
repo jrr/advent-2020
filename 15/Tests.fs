@@ -51,10 +51,10 @@ type ``Part One`` () =
         [14;8;16;0;1;17] |> solveOne |> should equal 240
         
 type ``Part Two`` () =
-    [<Fact>]
+    [<Fact(Skip="slow")>]
     let ``solves example`` () =
         [0;3;6] |> solveTwo |> should equal 175594
         
-//    [<Fact>]
-//    let ``solves problem`` () =
-//        solveTwo Input.problemInput |> should equal Input.problemInput
+    [<Fact(Skip="slow")>]
+    let ``solves problem`` () =
+        [14;8;16;0;1;17] |> solveTwo |> should equal 0
