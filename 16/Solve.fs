@@ -1,7 +1,5 @@
 module Solve
 
-open Common
-
 type TicketFieldValues = int list
 type IntRange = int * int
 
@@ -16,7 +14,7 @@ type Input =
 
 let parseField =
     function
-    | Regex @"([a-z ]+): (\d+)-(\d+) or (\d+)-(\d+)$" [ name; a; b; c; d ] ->
+    | Common.Regex @"([a-z ]+): (\d+)-(\d+) or (\d+)-(\d+)$" [ name; a; b; c; d ] ->
         { Name = name
           Range = ((int a, int b), (int c, int d)) }
     | x -> failwith $"parse error ({x})"
