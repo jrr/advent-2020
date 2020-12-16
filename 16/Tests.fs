@@ -6,34 +6,46 @@ open FsUnit.Xunit
 open Solve
 
 
-type ``Helpers`` () =
-    
-    [<Fact>]
-    let ``reads lines of text`` () =
-        Input.inputLines
-        |> Common.nonEmptyLines
-        |> Seq.length
-        |> should greaterThan 3
+type Helpers() =
 
     [<Fact>]
-    let ``reads groups of lines of text`` () =
-        Input.inputGroups
-        |> Common.lineGroups
-        |> Seq.length
-        |> should equal 2
+    let parses () =
+        Input.exampleInput
+        |> parse
+        |> should
+            equal
+               { Fields =
+                     [ { Name = "class"
+                         Range = ((1, 3), (5, 7)) }
+                       { Name = "row"
+                         Range = ((6, 11), (33, 44)) }
+                       { Name = "seat"
+                         Range = ((13, 40), (45, 50)) } ]
+                 MyTicket = [ 7; 1; 14 ]
+                 NearbyTickets =
+                     [ [ 7; 3; 47 ]
+                       [ 40; 4; 50 ]
+                       [ 55; 2; 20 ]
+                       [ 38; 6; 12 ] ] }
 
-type ``Part One`` () =
+type ``Part One``() =
     [<Fact>]
     let ``solves example`` () =
-        solveOne Input.exampleInput |> should equal Input.exampleInput
+        solveOne Input.exampleInput
+        |> should equal Input.exampleInput
+
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput |> should equal Input.problemInput
-        
-type ``Part Two`` () =
+        solveTwo Input.problemInput
+        |> should equal Input.problemInput
+
+type ``Part Two``() =
     [<Fact>]
     let ``solves example`` () =
-        solveOne Input.exampleInput |> should equal Input.exampleInput
+        solveOne Input.exampleInput
+        |> should equal Input.exampleInput
+
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput |> should equal Input.problemInput
+        solveTwo Input.problemInput
+        |> should equal Input.problemInput
