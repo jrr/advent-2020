@@ -65,8 +65,12 @@ type ``Part Two``() =
         Input.examplePart2
         |> parse
         |> solveTwo
-        |> List.sortBy (fst)
-        |> should equal [ "class", 12, "row", 11, "seat", 13 ]
+        |> set
+        |> should
+            equal
+               (set [ "class", 12
+                      "row", 11
+                      "seat", 13 ])
 
     [<Fact>]
     let ``solves problem`` () =
@@ -74,4 +78,4 @@ type ``Part Two``() =
         |> parse
         |> solveTwo
         |> myTicketProduct
-        |> should equal 0L
+        |> should equal 1346570764607L

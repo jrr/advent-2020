@@ -8,5 +8,4 @@ let main argv =
     result |> Seq.iter (fun (n,i) ->
         printfn "%s : %d" n i
         )
-//    printfn "Found answer! %u" (result)
-    0 // return an integer exit code
+    0

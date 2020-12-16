@@ -1,7 +1,6 @@
 module Solve
 
 open Common
-open System
 
 type TicketFieldValues = int list
 type IntRange = int * int
@@ -70,7 +69,7 @@ let solveOne (input: Input) =
     let invalids =
         allValues
         |> Seq.filter (fun v -> notValidForAnyField allRanges v)
-    //    input
+
     invalids |> Seq.reduce (+)
 
 let ticketIsValid (ticket: TicketFieldValues) (allRanges: IntRange seq) =
@@ -115,8 +114,6 @@ type SolvedColumn =
     { Column: NumberedCol
       PairedField: TicketField }
 
-type SolutionTwo = { SolvedColumns: SolvedColumn list }
-
 let matchingFieldsForCol (col: NumberedCol) (fields: TicketField list) =
     fields
     |> Seq.filter (fun field ->
@@ -125,7 +122,7 @@ let matchingFieldsForCol (col: NumberedCol) (fields: TicketField list) =
             (withinRange (fst field.Range) c)
             || (withinRange (snd field.Range) c)))
 
-let rec solveProblem problem : SolvedColumn seq =
+let rec solveProblem problem: SolvedColumn seq =
 
     if problem.Columns |> Seq.isEmpty then
         seq []
@@ -169,21 +166,12 @@ let rec solveProblem problem : SolvedColumn seq =
                   Columns =
                       problem.Columns
                       |> List.filter (fun c -> removedColNums |> Seq.contains c.ColNum |> not)
-                  CandidateFields = problem.CandidateFields |> List.filter (fun f -> removedFieldNames |> Seq.contains f.Name |> not) }
+                  CandidateFields =
+                      problem.CandidateFields
+                      |> List.filter (fun f -> removedFieldNames |> Seq.contains f.Name |> not) }
 
         let remainder = (solveProblem reducedProblem)
         Seq.append solutions remainder
-
-
-    //    matches
-    //    |> Seq.iter (fun (i, names) ->
-    //        let fieldNames =
-    //            names
-    //            |> Seq.map (fun r -> r.Name)
-    //            |> Seq.reduce (sprintf "%s,%s")
-    //
-    //        printfn "column %d could be %d fields: %s" i (names |> Seq.length) fieldNames)
-//        ()
 
 let solveTwo (input: Input): (string * int) list =
     let input2 = input |> filterOutInvalidTickets
@@ -198,14 +186,13 @@ let solveTwo (input: Input): (string * int) list =
           CandidateFields = input.Fields }
 
     let solution = solveProblem problem
-    solution |> Seq.map (fun s -> s.PairedField.Name,input.MyTicket.Item s.Column.ColNum) |> List.ofSeq
-    
-let myTicketProduct (input:(string*int) list) =
-    input |> Seq.filter (fun (n,i) -> n.StartsWith "departure") |> Seq.map (snd) |> Seq.map int64 |> Seq.reduce (*)
-    
-    
-//                        |> Seq.filter (fun f -> (fst f).StartsWith("departure"))
-//    let myDepartureRows = departureRows |> Seq.map (fun (name,colNum) -> input.MyTicket.[colNum])
-//    printfn "there should be 6 of these: %d" (myDepartureRows |> Seq.length)
-////    myDepartureRows
-//    ()
+    solution
+    |> Seq.map (fun s -> s.PairedField.Name, input.MyTicket.Item s.Column.ColNum)
+    |> List.ofSeq
+
+let myTicketProduct (input: (string * int) list) =
+    input
+    |> Seq.filter (fun (n, i) -> n.StartsWith "departure")
+    |> Seq.map (snd)
+    |> Seq.map int64
+    |> Seq.reduce (*)
