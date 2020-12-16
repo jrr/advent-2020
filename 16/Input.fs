@@ -16,6 +16,20 @@ nearby tickets:
 38,6,12
 """
 
+let examplePart2 ="""
+class: 0-1 or 4-19
+row: 0-5 or 8-19
+seat: 0-13 or 16-19
+
+your ticket:
+11,12,13
+
+nearby tickets:
+3,9,18
+15,1,5
+5,14,9
+"""
+
 let problemInput = """
 departure location: 36-269 or 275-973
 departure station: 25-237 or 245-972

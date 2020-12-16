@@ -28,6 +28,12 @@ type Helpers() =
                        [ 55; 2; 20 ]
                        [ 38; 6; 12 ] ] }
 
+    [<Fact>]
+    let ``transforms rows into columns`` () =
+        [ [ 1; 2; 3 ]; [ 4; 5; 6 ] ]
+        |> colsFromRows
+        |> should equal [ [ 1; 4 ]; [ 2; 5 ]; [ 3; 6 ] ]
+
 type ``Part One``() =
     [<Fact>]
     let ``solves example`` () =
@@ -43,15 +49,27 @@ type ``Part One``() =
         Input.problemInput
         |> parse
         |> solveOne
-        |> should equal 0
+        |> should equal 22073
 
-//type ``Part Two``() =
-//    [<Fact>]
-//    let ``solves example`` () =
-//        solveOne Input.exampleInput
-//        |> should equal Input.exampleInput
-//
-//    [<Fact>]
-//    let ``solves problem`` () =
-//        solveTwo Input.problemInput
+type ``Part Two``() =
+    [<Fact>]
+    let ``validates tickets`` () =
+        Input.exampleInput
+        |> parse
+        |> filterOutInvalidTickets
+        |> (fun i -> i.NearbyTickets.Length)
+        |> should equal 1
+
+    [<Fact>]
+    let ``solves example`` () =
+        Input.examplePart2
+        |> parse
+        |> solveTwo
+//        |> should equal [ "class", 12, "row", 11, "seat", 13 ]
+
+    [<Fact>]
+    let ``solves problem`` () =
+        Input.problemInput
+        |> parse
+        |> solveTwo
 //        |> should equal Input.problemInput
