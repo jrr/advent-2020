@@ -56,7 +56,7 @@ let notValidForAnyField (ranges: IntRange seq) (value: int) =
         |> Seq.exists (fun r -> withinRange r value)
 
     not validForAtLeastOne
-    
+
 
 let solveOne (input: Input) =
     let allRanges =
@@ -100,24 +100,112 @@ let colsFromRows (a: int list list) =
     |> Seq.map Seq.toList
     |> Seq.toList
 
-let validForAllFields (ranges: IntRange seq) (value:int) =
-    ranges |> Seq.forall (fun r -> withinRange r value)
-    
-let matchingFieldsForCol col (fields:TicketField list) =
-    fields |> Seq.filter (fun field -> col |> Seq.forall (fun c -> (withinRange (fst field.Range) c) || (withinRange (snd field.Range) c)))
-    
+let validForAllFields (ranges: IntRange seq) (value: int) =
+    ranges
+    |> Seq.forall (fun r -> withinRange r value)
+
+
+type NumberedCol = { ColNum: int; ColValues: int list }
+
+type ProblemTwo =
+    { Columns: NumberedCol list
+      CandidateFields: TicketField list }
+
+type SolvedColumn =
+    { Column: NumberedCol
+      PairedField: TicketField }
+
+type SolutionTwo = { SolvedColumns: SolvedColumn list }
+
+let matchingFieldsForCol (col: NumberedCol) (fields: TicketField list) =
+    fields
+    |> Seq.filter (fun field ->
+        col.ColValues
+        |> Seq.forall (fun c ->
+            (withinRange (fst field.Range) c)
+            || (withinRange (snd field.Range) c)))
+
+let rec solveProblem problem : SolvedColumn seq =
+
+    if problem.Columns |> Seq.isEmpty then
+        seq []
+    else
+        let matches =
+            problem.Columns
+            |> Seq.map (fun col ->
+                let result =
+                    matchingFieldsForCol col problem.CandidateFields
+
+                col.ColNum, result)
+
+        let solvedOnes =
+            matches
+            |> Seq.filter (fun (colNum, matchingCols) -> matchingCols |> Seq.length = 1)
+
+        if solvedOnes |> Seq.length > 1
+        then printfn ">1 solved column in a single pass! wasn't expecting that."
+        else ()
+
+
+        let solutions =
+            solvedOnes
+            |> Seq.map (fun (colNum, fields) ->
+                let theCol =
+                    problem.Columns
+                    |> List.find (fun c -> c.ColNum = colNum)
+
+                let theField = fields |> Seq.exactlyOne
+                { Column = theCol
+                  PairedField = theField })
+
+        let removedColNums =
+            solutions |> Seq.map (fun s -> s.Column.ColNum)
+
+        let removedFieldNames =
+            solutions |> Seq.map (fun f -> f.PairedField.Name)
+
+        let reducedProblem =
+            { problem with
+                  Columns =
+                      problem.Columns
+                      |> List.filter (fun c -> removedColNums |> Seq.contains c.ColNum |> not)
+                  CandidateFields = problem.CandidateFields |> List.filter (fun f -> removedFieldNames |> Seq.contains f.Name |> not) }
+
+        let remainder = (solveProblem reducedProblem)
+        Seq.append solutions remainder
+
+
+    //    matches
+    //    |> Seq.iter (fun (i, names) ->
+    //        let fieldNames =
+    //            names
+    //            |> Seq.map (fun r -> r.Name)
+    //            |> Seq.reduce (sprintf "%s,%s")
+    //
+    //        printfn "column %d could be %d fields: %s" i (names |> Seq.length) fieldNames)
+//        ()
+
 let solveTwo (input: Input): (string * int) list =
     let input2 = input |> filterOutInvalidTickets
     let cols = colsFromRows input2.NearbyTickets
-//    let fieldNames = input.Fields |> Seq.map (fun f -> f.Name)
 
-    let matches = cols |> Seq.mapi (fun i col ->
-        let result = matchingFieldsForCol col input2.Fields
-        i,result
-        )
+    let numberedColumns =
+        cols
+        |> Seq.mapi (fun i col -> { ColNum = i; ColValues = col })
+
+    let problem =
+        { Columns = numberedColumns |> Seq.toList
+          CandidateFields = input.Fields }
+
+    let solution = solveProblem problem
+    solution |> Seq.map (fun s -> s.PairedField.Name,input.MyTicket.Item s.Column.ColNum) |> List.ofSeq
     
-    matches  |> Seq.iter (fun (i,names) ->
-        let fieldNames = names |> Seq.map (fun r -> r.Name) |> Seq.reduce (sprintf "%s,%s")
-        printfn "column %d could be %d fields: %s" i (names |> Seq.length) fieldNames
-        )
-    []
+let myTicketProduct (input:(string*int) list) =
+    input |> Seq.filter (fun (n,i) -> n.StartsWith "departure") |> Seq.map (snd) |> Seq.map int64 |> Seq.reduce (*)
+    
+    
+//                        |> Seq.filter (fun f -> (fst f).StartsWith("departure"))
+//    let myDepartureRows = departureRows |> Seq.map (fun (name,colNum) -> input.MyTicket.[colNum])
+//    printfn "there should be 6 of these: %d" (myDepartureRows |> Seq.length)
+////    myDepartureRows
+//    ()
