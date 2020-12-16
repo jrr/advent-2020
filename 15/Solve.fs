@@ -1,49 +1,49 @@
 module Solve
 
-let rec recSeq (input: int list) =
-    seq {
-        let head :: tail = input
 
-        let next =
-            match tail |> Seq.tryFindIndex (fun x -> x = head) with
-            | Some previousUse -> previousUse + 1
+let tryGet (dict: System.Collections.Generic.Dictionary<int, int>) key =
+    if dict.ContainsKey key then Some dict.[key] else None
+
+
+
+let rec solve3inner (dict: System.Collections.Generic.Dictionary<int, int>) (turn: int) (current: int) =
+    seq {
+        let prevUse = tryGet dict current
+
+        let newCurrent =
+            match prevUse with
+            | Some prev -> turn - prev
             | None -> 0
 
-//        printfn "next %d" next
-        yield next
-        yield! recSeq (next :: input)
+        dict.[current] <- turn
+        yield current
+        yield! solve3inner dict (turn + 1) newCurrent
     }
 
-let buildSeq (input: int list) = recSeq (input |> List.rev)
+let vanEckSeq (input: int list) =
 
-// https://rosettacode.org/wiki/Van_Eck_sequence#F.23
-// Generate Van Eck's Sequence. Nigel Galloway: June 19th., 2019
-let ecK () =
-    let n =
-        System.Collections.Generic.Dictionary<int, int>()
+    seq {
 
-    Seq.unfold (fun (g, e) ->
-        Some
-            (g,
-             ((if n.ContainsKey g then
-                 let i = n.[g]
-                 n.[g] <- e
-                 e - i
-               else
-                   n.[g] <- e
-                   0),
-              e + 1))) (0, 0)
+        let seed =
+            input
+            |> Seq.mapi (fun i num -> num, i + 1)
+            |> Map.ofSeq
 
+        for item in input do
+            yield item
 
+        let dict =
+            System.Collections.Generic.Dictionary<int, int>(seed)
 
-let recSolve (input: int list) (num: int) =
-    input
-    |> buildSeq
-    |> Seq.skip (num - input.Length - 1)
+        yield! solve3inner dict (input.Length + 1) 0 (* is that right? *)
+    }
+
+let getNth (input: int list) (num: int) =
+    vanEckSeq input
+    |> Seq.skip (num - 1)
     |> Seq.take 1
     |> Seq.head
 
+let solve15a (input: int list) = getNth input 2020
 
-let solveOne (input: int list) = recSolve input 2020
-
-let solveTwo (input: int list) = recSolve input 30000000
+let solve15b (input: int list) = getNth input 30000000
