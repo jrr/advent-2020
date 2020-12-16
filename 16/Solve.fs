@@ -47,6 +47,29 @@ let parse (input: string) =
           |> List.ofSeq }
 
 
-let solveOne (input: string) = input
+let withinRange (range) (value): bool =
+    (value >= fst range) && (value <= snd range)
+
+let notValidForAnyField (ranges: IntRange seq) (value: int) =
+    let validForAtLeastOne =
+        ranges
+        |> Seq.exists (fun r -> withinRange r value)
+
+    not validForAtLeastOne
+
+let solveOne (input: Input) =
+    let allRanges =
+        input.Fields
+        |> Seq.collect (fun f -> [ fst f.Range; snd f.Range ])
+        |> Seq.sort
+
+    let allValues =
+        input.NearbyTickets |> Seq.collect id |> Seq.sort
+
+    let invalids =
+        allValues
+        |> Seq.filter (fun v -> notValidForAnyField allRanges v)
+    //    input
+    invalids |> Seq.reduce (+)
 
 let solveTwo (input: string) = input

@@ -31,21 +31,27 @@ type Helpers() =
 type ``Part One``() =
     [<Fact>]
     let ``solves example`` () =
-        solveOne Input.exampleInput
-        |> should equal Input.exampleInput
+        Input.exampleInput
+        |> parse
+        |> solveOne
+        |> should equal 71
+
+
 
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput
-        |> should equal Input.problemInput
+        Input.problemInput
+        |> parse
+        |> solveOne
+        |> should equal 0
 
-type ``Part Two``() =
-    [<Fact>]
-    let ``solves example`` () =
-        solveOne Input.exampleInput
-        |> should equal Input.exampleInput
-
-    [<Fact>]
-    let ``solves problem`` () =
-        solveTwo Input.problemInput
-        |> should equal Input.problemInput
+//type ``Part Two``() =
+//    [<Fact>]
+//    let ``solves example`` () =
+//        solveOne Input.exampleInput
+//        |> should equal Input.exampleInput
+//
+//    [<Fact>]
+//    let ``solves problem`` () =
+//        solveTwo Input.problemInput
+//        |> should equal Input.problemInput
