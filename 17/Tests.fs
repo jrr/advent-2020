@@ -12,7 +12,7 @@ type Helpers() =
     let ``parses line`` () =
         parseLine "#..#" 2
         |> Seq.toList
-        |> should equal [ (0, 2); (3, 2) ]
+        |> should equal [(0, 2, 0); (3, 2, 0)]
 
     [<Fact>]
     let ``parses input`` () =
@@ -20,15 +20,11 @@ type Helpers() =
         |> parse
         |> should
             equal
-               (set [ (0, 2)
-                      (2, 1)
-                      (1, 0)
-                      (1, 2)
-                      (2, 2) ])
+               (set [(0, 2, 0); (1, 0, 0); (1, 2, 0); (2, 1, 0); (2, 2, 0)])
 
     [<Fact>]
     let neighbors () =
-        (3, 3) |> neighbors |> should equal ( set [(2, 2); (2, 3); (2, 4); (3, 2); (3, 4); (4, 2); (4, 3); (4, 4)] )
+        (3, 3, 3) |> neighbors |> Set.count |> should equal 26
 
 type ``Part One``() =
     [<Fact>]
