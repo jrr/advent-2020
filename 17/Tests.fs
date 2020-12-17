@@ -9,18 +9,15 @@ open Solve
 type ``Helpers`` () =
     
     [<Fact>]
-    let ``reads lines of text`` () =
-        Input.inputLines
-        |> Common.nonEmptyLines
-        |> Seq.length
-        |> should greaterThan 3
-
+    let ``parses line`` () =
+        parseLine "#..#" 2 |> Seq.toList |> should equal [(0,2);(3,2)]
+        
     [<Fact>]
-    let ``reads groups of lines of text`` () =
-        Input.inputGroups
-        |> Common.lineGroups
-        |> Seq.length
-        |> should equal 2
+    let ``parses input`` () =
+        Input.exampleInput
+        |> parse
+        |> should equal (set [(0, 2); (2, 1); (1, 0); (1, 2); (2, 2)])
+
 
 type ``Part One`` () =
     [<Fact>]
