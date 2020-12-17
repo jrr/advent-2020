@@ -28,12 +28,12 @@ type ``Part One`` () =
         solveOne Input.exampleInput |> should equal Input.exampleInput
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput |> should equal Input.problemInput
+        solveOne Input.problemInput |> should equal Input.problemInput
         
 type ``Part Two`` () =
     [<Fact>]
     let ``solves example`` () =
-        solveOne Input.exampleInput |> should equal Input.exampleInput
+        solveTwo Input.exampleInput |> should equal Input.exampleInput
     [<Fact>]
     let ``solves problem`` () =
         solveTwo Input.problemInput |> should equal Input.problemInput
