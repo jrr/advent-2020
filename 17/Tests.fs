@@ -43,17 +43,38 @@ type Helpers() =
         |> neighbors
         |> Set.count
         |> should equal 26
+        
+    [<Fact>]
+    let times () =
+        times 2 (fun x -> x + 1) 5 |> should equal 7
 
 type ``Part One``() =
     [<Fact>]
+    let ``one round of example`` () =
+        Input.exampleInput |> parse |> tick |> print |> should equal """z=-1
+#..
+..#
+.#.
+
+z=0
+#.#
+.##
+.#.
+
+z=1
+#..
+..#
+.#.
+"""
+
+        ()
+    [<Fact>]
     let ``solves example`` () =
-        solveOne Input.exampleInput
-        |> should equal Input.exampleInput
+        Input.exampleInput |> solveOne |> should equal 112
 
     [<Fact>]
     let ``solves problem`` () =
-        solveOne Input.problemInput
-        |> should equal Input.problemInput
+        Input.problemInput|> solveOne |> should equal 202
 
 type ``Part Two``() =
     [<Fact>]

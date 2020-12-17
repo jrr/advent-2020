@@ -65,9 +65,39 @@ let print (ps: PointSet) =
                 |> String.concat "")
             |> String.concat "\n"
 
-        sprintf "z=%d\n%s" z slice)
+        sprintf "z=%d\n%s\n" z slice)
     |> String.concat "\n"
 
-let solveOne (input: string) = input
 
+let tick (input:PointSet) =
+    let pointsToTest = input |> Set.map neighbors |> Set.unionMany
+    let newPoints = pointsToTest |> Set.filter (fun p ->
+        let isActive = input.Contains p
+        let numNeighbors = p |> neighbors |> Set.filter (fun n -> input.Contains n) |> Set.count
+        match isActive, numNeighbors with
+        | true, 2 -> true
+        | true, 3 -> true
+        | false, 3 -> true
+        | _ -> false
+        
+        )
+    newPoints
+    
+let solveOne (input: string) =
+    input |> parse
+    |> tick
+    |> tick
+    |> tick
+    |> tick
+    |> tick
+    |> tick
+    |> fun s -> s.Count
+
+let rec times n f input=
+    let result = f input
+    if n > 1 then
+        times (n-1) f result
+    else
+        result
+    
 let solveTwo (input: string) = input
