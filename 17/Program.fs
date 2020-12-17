@@ -4,6 +4,6 @@ open Solve
 [<EntryPoint>]
 let main argv =
     
-    printfn "%O" (Input.problemInput)
+    Input.exampleInput |> parse |> print |> printfn "%s"
 
     0
