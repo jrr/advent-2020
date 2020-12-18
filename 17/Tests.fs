@@ -35,7 +35,8 @@ type Helpers() =
         |> should equal """z=0
 .#.
 ..#
-###"""
+###
+"""
 
     [<Fact>]
     let neighbors () =
