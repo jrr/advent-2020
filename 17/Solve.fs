@@ -2,23 +2,30 @@ module Solve
 
 type Point2 = int * int
 type Point3 = int * int * int
+type Point4 = int * int * int * int
 
 type PointOps<'T when 'T: comparison> =
     abstract print: 'T -> string
     abstract neighborVectors: 'T seq
     abstract addPoint: 'T -> 'T -> 'T
 
+let tuple1to2 y x = (x, y)
+let tuple2to3 z (x, y) = (x, y, z)
+let tuple3to4 w (x, y, z) = (x, y, z, w)
+
 let neighborVectors2: Point2 seq =
     [ -1; 0; 1 ]
-    |> Seq.map (fun x -> [ -1; 0; 1 ] |> Seq.map (fun y -> x, y))
+    |> Seq.map (fun x -> [ -1; 0; 1 ] |> Seq.map (tuple1to2 x))
     |> Seq.concat
 
 let neighborVectors3: Point3 seq =
     [ -1; 0; 1 ]
-    |> Seq.map (fun x ->
-        [ -1; 0; 1 ]
-        |> Seq.map (fun y -> [ -1; 0; 1 ] |> Seq.map (fun z -> x, y, z)))
+    |> Seq.map (fun z -> neighborVectors2 |> Seq.map (tuple2to3 z))
     |> Seq.concat
+    
+let neighborVectors4: Point4 seq =
+    [ -1; 0; 1 ]
+    |> Seq.map (fun w -> neighborVectors3 |> Seq.map (tuple3to4 w))
     |> Seq.concat
 
 let oneOf2 (x, _) = x
@@ -26,12 +33,20 @@ let twoOf2 (_, y) = y
 let oneOf3 (x, _, _) = x
 let twoOf3 (_, y, _) = y
 let threeOf3 (_, _, z) = z
+let oneOf4 (i,_,_,_) = i
+let twoOf4 (_,i,_,_) = i
+let threeOf4 (_,_,i,_) = i
+let fourOf4 (_,_,_,i) = i
 
 let addPoint2 (p1: Point2) (p2: Point2): Point2 =
     (oneOf2 p1 + oneOf2 p2), (twoOf2 p1 + twoOf2 p2)
 
 let addPoint3 (p1: Point3) (p2: Point3): Point3 =
     (oneOf3 p1 + oneOf3 p2), (twoOf3 p1 + twoOf3 p2), (threeOf3 p1 + threeOf3 p2)
+    
+let addPoint4 (p1:Point4)(p2:Point4):Point4=
+    (oneOf4 p1 + oneOf4 p2),(twoOf4 p1 + twoOf4 p2),(threeOf4 p1 + threeOf4 p2),(fourOf4 p1 + fourOf4 p2)
+    
 
 type Point2Ops() =
     interface PointOps<Point2> with
@@ -45,6 +60,12 @@ type Point3Ops() =
         member this.print(x) = "jkl"
         member this.neighborVectors = neighborVectors3
         member this.addPoint a b = addPoint3 a b
+        
+type Point4Ops() =
+    interface PointOps<Point4> with
+        member this.print(x) = "jkl"
+        member this.neighborVectors = neighborVectors4
+        member this.addPoint a b = addPoint4 a b
 
 
 let parseLine (input: string) (y: int): Point3 seq =
@@ -92,6 +113,7 @@ let print ps =
     |> String.concat "\n"
 
 
+let point4ops = Point4Ops()
 let point3ops = Point3Ops()
 let point2ops = Point2Ops()
 
@@ -127,6 +149,7 @@ let tick2 = tick point2ops
 
 let point3toPoint2 (p: Point3): Point2 = (oneOf3 p), (twoOf3 p)
 let point3toPoint3 (p: Point3): Point3 = p
+let point3toPoint4 (p: Point3): Point4 = tuple3to4 0 p
 
 let solve2d (input: string) =
     let ops = point2ops
@@ -157,4 +180,15 @@ let rec times n f input =
     let result = f input
     if n > 1 then times (n - 1) f result else result
 
-let solveTwo (input: string) = input
+let solveTwo (input: string) =
+    let ops = point4ops
+    input
+    |> parse
+    |> Set.map (point3toPoint4)
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> fun s -> s.Count

@@ -89,10 +89,8 @@ type ``Part Two``() =
         
     [<Fact>]
     let ``solves example`` () =
-        solveTwo Input.exampleInput
-        |> should equal Input.exampleInput
+        Input.exampleInput |> solveTwo |> should equal 848
 
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput
-        |> should equal Input.problemInput
+        Input.problemInput |> solveTwo |> should equal 2028
