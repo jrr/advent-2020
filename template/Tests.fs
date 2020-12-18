@@ -5,35 +5,37 @@ open Xunit
 open FsUnit.Xunit
 open Solve
 
-
-type ``Helpers`` () =
-    
-    [<Fact>]
-    let ``reads lines of text`` () =
-        Input.inputLines
-        |> Common.nonEmptyLines
-        |> Seq.length
-        |> should greaterThan 3
+type Helpers() =
 
     [<Fact>]
-    let ``reads groups of lines of text`` () =
-        Input.inputGroups
-        |> Common.lineGroups
-        |> Seq.length
-        |> should equal 2
+    let ``parses example input`` () =
+        Input.exampleInput
+        |> parse
+        |> should not' (equal true)
+        ()
 
-type ``Part One`` () =
+type ``Part One``() =
     [<Fact>]
     let ``solves example`` () =
-        solveOne Input.exampleInput |> should equal Input.exampleInput
+        Input.exampleInput
+        |> solveOne
+        |> should not' (equal true)
+
     [<Fact>]
     let ``solves problem`` () =
-        solveOne Input.problemInput |> should equal Input.problemInput
-        
-type ``Part Two`` () =
+        Input.problemInput
+        |> solveOne
+        |> should not' (equal true)
+
+type ``Part Two``() =
     [<Fact>]
     let ``solves example`` () =
-        solveTwo Input.exampleInput |> should equal Input.exampleInput
+        Input.exampleInput
+        |> solveTwo
+        |> should not' (equal true)
+
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput |> should equal Input.problemInput
+        Input.problemInput
+        |> solveTwo
+        |> should not' (equal true)

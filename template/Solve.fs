@@ -1,5 +1,10 @@
 module Solve
 
-let solveOne (input: string) = input
+let parse (input: string) =
+    input
+    // |> Common.lineGroups
+    |> Common.nonEmptyLines
 
-let solveTwo (input: string) = input
+let solveOne (input: string) = input |> parse |> id
+
+let solveTwo (input: string) = input |> parse |> id
