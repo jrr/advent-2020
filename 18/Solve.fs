@@ -50,28 +50,38 @@ let countParens s =
     | l,r when l = r -> HasParens l
     | l,r when l <> r -> failwith "Mismatched parens"
     
-let rec eval (input:Token list) =
+let rec evalPart1 (input:Token list) =
     match input with
     | [IntLiteral n] -> n
-    | (IntLiteral n)::Plus::tail -> n + (eval tail)
-    | (IntLiteral n)::MultipliedBy::tail -> n * (eval tail)
+    | (IntLiteral n)::Plus::tail -> n + (evalPart1 tail)
+    | (IntLiteral n)::MultipliedBy::tail -> n * (evalPart1 tail)
     | x -> failwith (sprintf "unrecognized token %O" x)
     
-let evalString (input:string) =
+let rec evalPart2 (input:Token list) =
+    match input with
+    | [IntLiteral n] -> n
+    | (IntLiteral n)::Plus::tail -> n + (evalPart1 tail)
+    | (IntLiteral n)::MultipliedBy::tail -> n * (evalPart1 tail)
+    | x -> failwith (sprintf "unrecognized token %O" x)
+    
+let evalString eval (input:string) =
     let tokens = input |> tokenize |> Seq.toList |> List.rev
     eval tokens |> (sprintf "%d")
     
-let rec recSolve (input:string) =
+let rec recSolve (eval:Token list->int64) (input:string) : string =
     match countParens input with
-    | NoParens -> evalString input
+    | NoParens -> evalString eval input
     | HasParens _ ->
         let splits = extractParenthesized input
-        let solvedMiddle = evalString splits.parenthesized
+        let solvedMiddle = evalString  eval splits.parenthesized
         let newString = sprintf "%s%s%s" splits.left solvedMiddle splits.right
-        recSolve newString
+        recSolve eval newString
         
 let solveLine (input:string) =
-    input |> recSolve |> int64
+    recSolve evalPart1 input |> int64
+    
+let solveLine2 (input:string) =
+    recSolve evalPart2 input |> int64
     
 
 let solveOne (input: string) =
