@@ -148,13 +148,8 @@ type ``Part Two``() =
         |> solveLine2
         |> should equal 23340L
 
-
-    [<Fact>]
-    let ``solves example`` () =
-        solveTwo Input.exampleInput
-        |> should equal Input.exampleInput
-
     [<Fact>]
     let ``solves problem`` () =
-        solveTwo Input.problemInput
-        |> should equal Input.problemInput
+        Input.problemInput
+        |> solveTwo
+        |> should equal 70518821989947L

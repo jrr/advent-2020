@@ -59,9 +59,10 @@ let rec evalPart1 (input:Token list) =
     
 let rec evalPart2 (input:Token list) =
     match input with
+    | (IntLiteral n)::Plus::(IntLiteral m)::tail ->
+        evalPart2 ((IntLiteral (n+m))::tail)
+    | (IntLiteral n)::MultipliedBy::tail -> n * (evalPart2 tail)
     | [IntLiteral n] -> n
-    | (IntLiteral n)::Plus::tail -> n + (evalPart1 tail)
-    | (IntLiteral n)::MultipliedBy::tail -> n * (evalPart1 tail)
     | x -> failwith (sprintf "unrecognized token %O" x)
     
 let evalString eval (input:string) =
@@ -87,4 +88,5 @@ let solveLine2 (input:string) =
 let solveOne (input: string) =
     input |> Common.nonEmptyLines |> Seq.map solveLine  |> Seq.reduce (+)
 
-let solveTwo (input: string) = input
+let solveTwo (input: string) =
+    input |> Common.nonEmptyLines |> Seq.map solveLine2  |> Seq.reduce (+)
