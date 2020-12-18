@@ -1,16 +1,53 @@
 module Solve
 
-type Point = int * int * int
-type PointSet = Set<Point>
+type Point2 = int * int
+type Point3 = int * int * int
 
-//      maybe if needed for optimization later, but for now using them is harder
-//        struct
-//                val X: int
-//                val Y: int
-//        new(x, y) = { X = x; Y = y }
-//        end
+type PointOps<'T when 'T: comparison> =
+    abstract print: 'T -> string
+    abstract neighborVectors: 'T seq
+    abstract addPoint: 'T -> 'T -> 'T
 
-let parseLine (input: string) (y: int): Point seq =
+let neighborVectors2: Point2 seq =
+    [ -1; 0; 1 ]
+    |> Seq.map (fun x -> [ -1; 0; 1 ] |> Seq.map (fun y -> x, y))
+    |> Seq.concat
+
+let neighborVectors3: Point3 seq =
+    [ -1; 0; 1 ]
+    |> Seq.map (fun x ->
+        [ -1; 0; 1 ]
+        |> Seq.map (fun y -> [ -1; 0; 1 ] |> Seq.map (fun z -> x, y, z)))
+    |> Seq.concat
+    |> Seq.concat
+
+let oneOf2 (x, _) = x
+let twoOf2 (_, y) = y
+let oneOf3 (x, _, _) = x
+let twoOf3 (_, y, _) = y
+let threeOf3 (_, _, z) = z
+
+let addPoint2 (p1: Point2) (p2: Point2): Point2 =
+    (oneOf2 p1 + oneOf2 p2), (twoOf2 p1 + twoOf2 p2)
+
+let addPoint3 (p1: Point3) (p2: Point3): Point3 =
+    (oneOf3 p1 + oneOf3 p2), (twoOf3 p1 + twoOf3 p2), (threeOf3 p1 + threeOf3 p2)
+
+type Point2Ops() =
+    interface PointOps<Point2> with
+        member this.print(x) = "jkl"
+        member this.neighborVectors = neighborVectors2
+        member this.addPoint a b = addPoint2 a b
+
+
+type Point3Ops() =
+    interface PointOps<Point3> with
+        member this.print(x) = "jkl"
+        member this.neighborVectors = neighborVectors3
+        member this.addPoint a b = addPoint3 a b
+
+
+let parseLine (input: string) (y: int): Point3 seq =
     input
     |> Seq.mapi (fun x c -> if (c = '#') then Some(x, y, 0) else None)
     |> Seq.choose id
@@ -22,38 +59,24 @@ let parse (input: string) =
     |> Seq.concat
     |> Set.ofSeq
 
-let neighborVectors: Point seq =
-    [ -1; 0; 1 ]
-    |> Seq.map (fun x ->
-        [ -1; 0; 1 ]
-        |> Seq.map (fun y -> [ -1; 0; 1 ] |> Seq.map (fun z -> x, y, z)))
-    |> Seq.concat
-    |> Seq.concat
 
-let xOf (x, _, _) = x
-let yOf (_, y, _) = y
-let zOf (_, _, z) = z
-
-let addPoint (p1: Point) (p2: Point): Point =
-    (xOf p1 + xOf p2), (yOf p1 + yOf p2), (zOf p1 + zOf p2)
-
-let neighbors (p: Point) =
-    neighborVectors
-    |> Seq.map (fun n -> addPoint n p)
+let neighbors (pointOps: PointOps<'t>) (p: 't) =
+    pointOps.neighborVectors
+    |> Seq.map (fun n -> pointOps.addPoint n p)
     |> Seq.filter (fun r -> r <> p)
     |> Set.ofSeq
 
-let minMax (ps: PointSet) lookup =
+let minMax ps lookup =
     let values = ps |> Set.map lookup
     (values |> Seq.min), (values |> Seq.max)
 
-let printPoint (ps: PointSet) (p: Point) =
+let printPoint ps p =
     if ps |> Set.contains p then "#" else "."
 
-let print (ps: PointSet) =
-    let minX, maxX = minMax ps xOf
-    let minY, maxY = minMax ps yOf
-    let minZ, maxZ = minMax ps zOf
+let print ps =
+    let minX, maxX = minMax ps oneOf3
+    let minY, maxY = minMax ps twoOf3
+    let minZ, maxZ = minMax ps threeOf3
 
     { minZ .. maxZ }
     |> Seq.map (fun z ->
@@ -69,35 +92,69 @@ let print (ps: PointSet) =
     |> String.concat "\n"
 
 
-let tick (input:PointSet) =
-    let pointsToTest = input |> Set.map neighbors |> Set.unionMany
-    let newPoints = pointsToTest |> Set.filter (fun p ->
-        let isActive = input.Contains p
-        let numNeighbors = p |> neighbors |> Set.filter (fun n -> input.Contains n) |> Set.count
-        match isActive, numNeighbors with
-        | true, 2 -> true
-        | true, 3 -> true
-        | false, 3 -> true
-        | _ -> false
-        
-        )
+let point3ops = Point3Ops()
+let point2ops = Point2Ops()
+
+let tick (pointOps: PointOps<'P>) (input: Set<'P>) =
+    let pointsToTest =
+        input
+        |> Set.map (neighbors pointOps)
+        |> Set.unionMany
+
+    let newPoints =
+        pointsToTest
+        |> Set.filter (fun p ->
+            let isActive = input.Contains p
+
+            let numNeighbors =
+                p
+                |> (neighbors pointOps)
+                |> Set.filter (fun n -> input.Contains n)
+                |> Set.count
+
+            match isActive, numNeighbors with
+            | true, 2 -> true
+            | true, 3 -> true
+            | false, 3 -> true
+            | _ -> false
+
+            )
+
     newPoints
-    
-let solveOne (input: string) =
-    input |> parse
-    |> tick
-    |> tick
-    |> tick
-    |> tick
-    |> tick
-    |> tick
+
+let tick3 = tick point3ops
+let tick2 = tick point2ops
+
+let point3toPoint2 (p: Point3): Point2 = (oneOf3 p), (twoOf3 p)
+let point3toPoint3 (p: Point3): Point3 = p
+
+let solve2d (input: string) =
+    let ops = point2ops
+    input
+    |> parse
+    |> Set.map (point3toPoint2)
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> tick ops
     |> fun s -> s.Count
 
-let rec times n f input=
+let solveOne (input: string) =
+    let ops = point3ops
+    input
+    |> parse
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> tick ops
+    |> fun s -> s.Count
+
+let rec times n f input =
     let result = f input
-    if n > 1 then
-        times (n-1) f result
-    else
-        result
-    
+    if n > 1 then times (n - 1) f result else result
+
 let solveTwo (input: string) = input
