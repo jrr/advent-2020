@@ -4,24 +4,21 @@ type Point2 = int * int
 type Point3 = int * int * int
 type Point4 = int * int * int * int
 
-let tuple1to2 y x = (x, y)
-let tuple2to3 z (x, y) = (x, y, z)
-let tuple3to4 w (x, y, z) = (x, y, z, w)
+let tuple1to2 x y = (x, y)
+let tuple2to3 (x, y) z = (x, y, z)
+let tuple3to4 (x, y, z) w = (x, y, z, w)
 
-let neighborVectors2: Point2 seq =
-    [ -1; 0; 1 ]
-    |> Seq.map (fun x -> [ -1; 0; 1 ] |> Seq.map (tuple1to2 x))
-    |> Seq.concat
+let neighborVectors1: int seq = seq [ -1; 0; 1 ]
 
-let neighborVectors3: Point3 seq =
-    [ -1; 0; 1 ]
-    |> Seq.map (fun z -> neighborVectors2 |> Seq.map (tuple2to3 z))
-    |> Seq.concat
+let grow tupGrow =
+    Seq.map (fun n -> neighborVectors1 |> Seq.map (tupGrow n))
+    >> Seq.concat
 
-let neighborVectors4: Point4 seq =
-    [ -1; 0; 1 ]
-    |> Seq.map (fun w -> neighborVectors3 |> Seq.map (tuple3to4 w))
-    |> Seq.concat
+let neighborVectors2: Point2 seq = neighborVectors1 |> grow tuple1to2
+
+let neighborVectors3: Point3 seq = neighborVectors2 |> grow tuple2to3
+
+let neighborVectors4: Point4 seq = neighborVectors3 |> grow tuple3to4
 
 let oneOf2 (x, _) = x
 let twoOf2 (_, y) = y
@@ -41,8 +38,6 @@ let addPoint3 (p1: Point3) (p2: Point3): Point3 =
 
 let addPoint4 (p1: Point4) (p2: Point4): Point4 =
     (oneOf4 p1 + oneOf4 p2), (twoOf4 p1 + twoOf4 p2), (threeOf4 p1 + threeOf4 p2), (fourOf4 p1 + fourOf4 p2)
-
-
 
 let parseLine (input: string) (y: int): Point3 seq =
     input
@@ -120,7 +115,7 @@ let tick2 =
 
 let point3toPoint2 (p: Point3): Point2 = (oneOf3 p), (twoOf3 p)
 let point3toPoint3 (p: Point3): Point3 = p
-let point3toPoint4 (p: Point3): Point4 = tuple3to4 0 p
+let point3toPoint4 (p: Point3): Point4 = tuple3to4 p 0
 
 let countAfterSixTicks neighbors input =
     input
