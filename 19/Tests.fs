@@ -6,6 +6,36 @@ open Xunit
 open FsUnit.Xunit
 open Solve
 
+type TreeStuff() =
+
+    [<Fact>]
+    let ``builds tree`` () =
+        let ruleMap =
+            buildRuleMap (Input.exampleInput |> parse).rules
+
+        let expected =
+            SequenceNode [ LeafNode "a"
+                           OrNode [ SequenceNode [ OrNode [ SequenceNode [ LeafNode "a"
+                                                                           LeafNode "a" ]
+                                                            SequenceNode [ LeafNode "b"
+                                                                           LeafNode "b" ] ]
+                                                   OrNode [ SequenceNode [ LeafNode "a"
+                                                                           LeafNode "b" ]
+                                                            SequenceNode [ LeafNode "b"
+                                                                           LeafNode "a" ] ] ]
+                                    SequenceNode [ OrNode [ SequenceNode [ LeafNode "a"
+                                                                           LeafNode "b" ]
+                                                            SequenceNode [ LeafNode "b"
+                                                                           LeafNode "a" ] ]
+                                                   OrNode [ SequenceNode [ LeafNode "a"
+                                                                           LeafNode "a" ]
+                                                            SequenceNode [ LeafNode "b"
+                                                                           LeafNode "b" ] ] ] ]
+                           LeafNode "b" ]
+
+        buildTree ruleMap 0 |> should equal expected
+        ()
+
 type Helpers() =
 
 
@@ -91,9 +121,10 @@ type Helpers() =
         |> should equal expected
 
     [<Fact>]
-    let ``applyStringToDigitList`` () =
-        applyStringToDigitList [ Num 4; Num 4]  (4,"X") |> should equal [String "X";String "X"]
-        
+    let applyStringToDigitList () =
+        applyStringToDigitList [ Num 4; Num 4 ] (4, "X")
+        |> should equal [ String "X"; String "X" ]
+
     [<Fact>]
     let ``reduces via string replacement`` () =
         let input =
@@ -109,8 +140,14 @@ type Helpers() =
 
     [<Fact>]
     let ``reduces digits`` () =
-        [Num 1; Num 2; String "a"; String "b"; Num 3] |> reduceDigits |> should equal [Num 1; Num 2; String "ab"; Num 3]
-        
+        [ Num 1
+          Num 2
+          String "a"
+          String "b"
+          Num 3 ]
+        |> reduceDigits
+        |> should equal [ Num 1; Num 2; String "ab"; Num 3 ]
+
 type ``Part One``() =
     [<Fact>]
     let ``solves example`` () =

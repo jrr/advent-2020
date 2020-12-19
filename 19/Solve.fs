@@ -147,15 +147,68 @@ let shortenStrings (input: (int * Rule) list) =
         )
 
 let rec reduceRepeatedly rules =
-    let reduced = rules |> reduceStringRules |> shortenStrings
+    let reduced =
+        rules |> reduceStringRules |> shortenStrings
+
     if reduced.Length = rules.Length then
         printfn "done reducing at %d." (reduced.Length)
         reduced
     else
         printfn "reduced to %d.." (reduced.Length)
         reduceRepeatedly reduced
-        
+
 
 let solveOne (input: string) = input |> parse |> id
 
 let solveTwo (input: string) = input |> parse |> id
+
+type RuleMap = Map<int, Rule>
+
+let buildRuleMap (rules: (int * Rule) list) = rules |> Map.ofList
+
+
+type Node =
+    | LeafNode of string
+    | OrNode of Node list
+    | SequenceNode of Node list
+
+let rec buildTree (map: RuleMap) (from: int) =
+    let rule = map.[from]
+    match rule with
+    | StringRule sr -> LeafNode sr
+    | Digits d -> buildSequence map d
+    | Or (a, b) ->
+        OrNode [ (buildSequence map a)
+                 (buildSequence map b) ]
+
+and digitNode (map: RuleMap) (i: NumOrString) =
+    match i with
+    | Num num -> (buildTree map num)
+    | String s -> LeafNode s
+
+and buildSequence (map: RuleMap) (l: NumOrString list) =
+    l
+    |> List.map (fun d -> digitNode map d)
+    |> SequenceNode
+// 0: 4 1 5
+// 1: 2 3 | 3 2
+// 2: 4 4 | 5 5
+// 3: 4 5 | 5 4
+// 4: "a"
+// 5: "b"
+let n5 = LeafNode "b"
+let n4 = LeafNode "a"
+
+let n3 =
+    OrNode [ (SequenceNode [ n4; n5 ])
+             (SequenceNode [ n5; n4 ]) ]
+
+let n2 =
+    OrNode [ (SequenceNode [ n4; n4 ])
+             (SequenceNode [ n5; n5 ]) ]
+
+let n1 =
+    OrNode [ (SequenceNode [ n2; n3 ])
+             (SequenceNode [ n3; n2 ]) ]
+
+let n0 = SequenceNode [ n4; n1; n5 ]
