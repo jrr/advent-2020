@@ -79,6 +79,38 @@ type Helpers() =
                        "aaabbb"
                        "aaaabbb" ] }
 
+    [<Fact>]
+    let ``applies string`` () =
+        let input = [ (3, Digits [ Num 4; Num 5; Num 6 ]) ]
+
+        let expected =
+            [ (3, Digits [ Num 4; String "X"; Num 6 ]) ]
+
+        applyStringRule (5, "X") input
+        |> List.ofSeq
+        |> should equal expected
+
+    [<Fact>]
+    let ``applyStringToDigitList`` () =
+        applyStringToDigitList [ Num 4; Num 4]  (4,"X") |> should equal [String "X";String "X"]
+        
+    [<Fact>]
+    let ``reduces via string replacement`` () =
+        let input =
+            [ (0, Digits [ Num 4; Num 1; Num 5 ])
+              (1, Or([ Num 2; Num 4 ], [ Num 4; Num 2 ]))
+              (4, StringRule "a") ]
+
+        let expected =
+            [ (0, Digits [ String "a"; Num 1; Num 5 ])
+              (1, Or([ Num 2; String "a" ], [ String "a"; Num 2 ])) ]
+
+        reduceStringRules input |> should equal expected
+
+    [<Fact>]
+    let ``reduces digits`` () =
+        [Num 1; Num 2; String "a"; String "b"; Num 3] |> reduceDigits |> should equal [Num 1; Num 2; String "ab"; Num 3]
+        
 type ``Part One``() =
     [<Fact>]
     let ``solves example`` () =
