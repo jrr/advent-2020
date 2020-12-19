@@ -6,18 +6,15 @@ open Xunit
 open FsUnit.Xunit
 open Solve
 
-type Rule =
-    | StringRule of string
-    | Digits of int list
-    | Or of (int list) * (int list)
-    
-type ProblemInput = {
-    rules: (int * Rule) list
-    messages: string list
-}
 type Helpers() =
 
 
+    [<Fact>]
+    let ``parses rules`` () =
+        "60: 117 7 | 89 13" |>parseRule|> should equal ("60", Or ([117; 7], [89; 13]))
+        "64: 99 7"|>parseRule|>should equal ("64", Digits [99; 7])
+        "13: \"b\"" |>parseRule |> should equal ("13", StringRule "b")
+        
     [<Fact>]
     let ``replaces single-digit numbers with letters`` () =
         
@@ -48,7 +45,11 @@ type Helpers() =
 92: 114 13 | 125 7"""
 //        input.repl
         let result = replaceNumWithString input 13 "b"
-        result |> should equal ""
+        result |> should equal "5: 108 b | 27 7
+30: 14 7 | 50 b
+50: b 23 | 7 111
+32: b 7 | b 13
+92: 114 b | 125 7"
         
     [<Fact>]
     let ``parses example input`` () =
