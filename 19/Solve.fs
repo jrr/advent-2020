@@ -190,6 +190,31 @@ and buildSequence (map: RuleMap) (l: NumOrString list) =
     l
     |> List.map (fun d -> digitNode map d)
     |> SequenceNode
+
+
+let rec walkMap (node: Node) (depth: int) =
+    let indent =
+        Seq.replicate depth "  " |> String.Concat
+    // printfn "%swalking.. d=%d" indent depth
+
+    let result =
+        match node with
+        | LeafNode s -> printfn "%sLeafNode! '%s'" indent s
+        | OrNode nodeList ->
+            printfn "%sOrNode!" indent
+            nodeList
+            |> List.map (fun n -> walkMap n (depth + 1))
+            |> ignore
+        | SequenceNode nodeList ->
+            printfn "%sSequenceNode!" indent
+            nodeList
+            |> List.map (fun n -> walkMap n (depth + 1))
+            |> ignore
+
+    node
+
+
+
 // 0: 4 1 5
 // 1: 2 3 | 3 2
 // 2: 4 4 | 5 5
