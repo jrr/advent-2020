@@ -5,6 +5,8 @@ open System
 [<EntryPoint>]
 let main argv =
     
+    Input.problemInput |> solveOne |> (printfn "= %d")
+    0
 // //    let one = replaceNumWithString Input.problemInput 7 "a"
 // //    let two = replaceNumWithString one 13 "b"
 // //    let lines = two |> Common.lineGroups |> Seq.head
@@ -32,12 +34,12 @@ let main argv =
 //     printfn "%d dupes:" (dups |> Seq.length)
 
 
-    let rules = buildRuleMap (Input.exampleInput |> parse).rules
-    let tree = buildTree rules 0
-    let opt = tree |> optimizeTree
-    opt |> printTree
-    printfn "==="
-    let s = walkMap2 0 id opt 
-    printfn "%s" s
-
-    0
+//    let rules = buildRuleMap (Input.exampleInput |> parse).rules
+//    let tree = buildTree rules 0
+//    let opt = tree |> optimizeTree
+//    opt |> printTree
+//    printfn "==="
+//    let s = createRegexString 0 id opt 
+//    printfn "%s" s
+//
+//    0

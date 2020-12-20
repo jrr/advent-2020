@@ -157,9 +157,6 @@ let rec reduceRepeatedly rules =
         printfn "reduced to %d.." (reduced.Length)
         reduceRepeatedly reduced
 
-
-let solveOne (input: string) = input |> parse |> id
-
 let solveTwo (input: string) = input |> parse |> id
 
 type RuleMap = Map<int, Rule>
@@ -244,8 +241,7 @@ let optimizeTree tree =
     |> walkMap 0 removeSequences
 
 
-/// todo: separate traversal and logging
-let rec walkMap2 (depth: int) fn (node: Node): string =
+let rec createRegexStringRec (depth: int) (node: Node): string =
 
     // let updatedNode = fn node depth
 
@@ -253,11 +249,60 @@ let rec walkMap2 (depth: int) fn (node: Node): string =
     | LeafNode s -> sprintf "%s" s
     | OrNode nodeList ->
         nodeList
-        |> List.map (fun n -> walkMap2 (depth + 1) fn n)
+        |> List.map (fun n -> createRegexStringRec (depth + 1) n)
         |> List.reduce (fun a b -> $"{a}|{b}")
         |> sprintf "(%s)"
     | SequenceNode nodeList ->
         nodeList
-        |> List.map (fun n -> walkMap2 (depth + 1) fn n)
-        |> List.reduce (fun a b -> $"{a},{b}")
-        |> sprintf "[%s]"
+        |> List.map (fun n -> createRegexStringRec (depth + 1) n)
+        |> List.reduce (fun a b -> $"{a}{b}")
+        |> sprintf "%s"
+
+let createRegexString (node: Node) =
+    let s = createRegexStringRec 0 node
+    $"^{s}$"
+// a((aa|bb)(ab|ba)|(ab|ba)(aa|bb))b
+
+(*
+
+[(aa|bb),(ab|ba)]|[(ab|ba),(aa|bb)]
+
+
+[(aa|bb),(ab|ba)]
+[(ab|ba),(aa|bb)]
+
+*)
+
+let buildRegex s = new Regex(s)
+
+let solveOne (input: string) =
+    let parsed = input |> parse
+    let rules = parsed.rules |> buildRuleMap
+
+    let regex =
+        buildTree rules 0
+        |> optimizeTree
+        |> createRegexString
+        |> Regex
+
+    let matches =
+        parsed.messages |> List.filter regex.IsMatch
+
+    let rejects =
+        parsed.messages
+        |> List.filter (regex.IsMatch >> not)
+
+    printfn "%d matches:" (matches.Length)
+    matches |> List.iter (printfn "  %s")
+    printfn "%d rejects:" (rejects.Length)
+    rejects |> List.iter (printfn "  %s")
+    matches.Length
+
+
+//    let rules = buildRuleMap (Input.exampleInput |> parse).rules
+//    let tree = buildTree rules 0
+//    let opt = tree |> optimizeTree
+//    opt |> printTree
+//    printfn "==="
+//    let s = buildRegex 0 id opt
+//    input |> parse |> id
