@@ -192,27 +192,40 @@ and buildSequence (map: RuleMap) (l: NumOrString list) =
     |> SequenceNode
 
 
-let rec walkMap (node: Node) (depth: int) =
+let rec walkMap (node: Node) (depth: int) fn =
+
+    let updatedNode = fn node depth
+
+    // log and also keep walking
+    match updatedNode with
+    | LeafNode s -> LeafNode s
+    | OrNode nodeList ->
+        nodeList
+        |> List.map (fun n -> walkMap n (depth + 1) fn)
+        |> OrNode
+    | SequenceNode nodeList ->
+        nodeList
+        |> List.map (fun n -> walkMap n (depth + 1) fn)
+        |> SequenceNode
+
+
+let rec logNode (node: Node) (depth: int): Node =
     let indent =
         Seq.replicate depth "  " |> String.Concat
-    // printfn "%swalking.. d=%d" indent depth
 
-    let result =
-        match node with
-        | LeafNode s -> printfn "%sLeafNode! '%s'" indent s
-        | OrNode nodeList ->
-            printfn "%sOrNode!" indent
-            nodeList
-            |> List.map (fun n -> walkMap n (depth + 1))
-            |> ignore
-        | SequenceNode nodeList ->
-            printfn "%sSequenceNode!" indent
-            nodeList
-            |> List.map (fun n -> walkMap n (depth + 1))
-            |> ignore
+    match node with
+    | LeafNode s ->
+        printfn "%sLeafNode! '%s'" indent s
+        LeafNode s
+    | OrNode nodeList ->
+        printfn "%sOrNode!" indent
+        OrNode nodeList
+    | SequenceNode nodeList ->
+        printfn "%sSequenceNode!" indent
+        SequenceNode nodeList
 
-    node
 
+let printTree tree = walkMap tree 0 logNode |> ignore
 
 
 // 0: 4 1 5

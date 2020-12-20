@@ -1,5 +1,6 @@
 
 open Solve
+open System
 
 [<EntryPoint>]
 let main argv =
@@ -33,6 +34,6 @@ let main argv =
 
     let rules = buildRuleMap (Input.exampleInput |> parse).rules
     let tree = buildTree rules 0
-    walkMap tree 0 |> ignore
+    printTree tree
 
     0
