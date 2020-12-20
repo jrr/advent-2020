@@ -192,20 +192,21 @@ and buildSequence (map: RuleMap) (l: NumOrString list) =
     |> SequenceNode
 
 
-let rec walkMap (node: Node) (depth: int) fn =
+
+/// calls given function on each node of the tree, and then traverse from the updated node
+let rec walkMap (depth: int) fn (node: Node) =
 
     let updatedNode = fn node depth
 
-    // log and also keep walking
     match updatedNode with
     | LeafNode s -> LeafNode s
     | OrNode nodeList ->
         nodeList
-        |> List.map (fun n -> walkMap n (depth + 1) fn)
+        |> List.map (fun n -> walkMap (depth + 1) fn n)
         |> OrNode
     | SequenceNode nodeList ->
         nodeList
-        |> List.map (fun n -> walkMap n (depth + 1) fn)
+        |> List.map (fun n -> walkMap (depth + 1) fn n)
         |> SequenceNode
 
 
@@ -225,28 +226,38 @@ let rec logNode (node: Node) (depth: int): Node =
         SequenceNode nodeList
 
 
-let printTree tree = walkMap tree 0 logNode |> ignore
+let printTree tree = walkMap 0 logNode tree |> ignore
+
+let rec squishSequences (node: Node) (_depth: int): Node =
+    match node with
+    | SequenceNode ((LeafNode s1) :: (LeafNode s2) :: tail) -> SequenceNode((LeafNode $"{s1}{s2}") :: tail)
+    | n -> n
+
+let rec removeSequences (node: Node) (_depth: int): Node =
+    match node with
+    | SequenceNode [ (LeafNode s) ] -> LeafNode s
+    | n -> n
+
+let optimizeTree tree =
+    tree
+    |> walkMap 0 squishSequences
+    |> walkMap 0 removeSequences
 
 
-// 0: 4 1 5
-// 1: 2 3 | 3 2
-// 2: 4 4 | 5 5
-// 3: 4 5 | 5 4
-// 4: "a"
-// 5: "b"
-let n5 = LeafNode "b"
-let n4 = LeafNode "a"
+/// todo: separate traversal and logging
+let rec walkMap2 (depth: int) fn (node: Node): string =
 
-let n3 =
-    OrNode [ (SequenceNode [ n4; n5 ])
-             (SequenceNode [ n5; n4 ]) ]
+    // let updatedNode = fn node depth
 
-let n2 =
-    OrNode [ (SequenceNode [ n4; n4 ])
-             (SequenceNode [ n5; n5 ]) ]
-
-let n1 =
-    OrNode [ (SequenceNode [ n2; n3 ])
-             (SequenceNode [ n3; n2 ]) ]
-
-let n0 = SequenceNode [ n4; n1; n5 ]
+    match node with
+    | LeafNode s -> sprintf "%s" s
+    | OrNode nodeList ->
+        nodeList
+        |> List.map (fun n -> walkMap2 (depth + 1) fn n)
+        |> List.reduce (fun a b -> $"{a}|{b}")
+        |> sprintf "(%s)"
+    | SequenceNode nodeList ->
+        nodeList
+        |> List.map (fun n -> walkMap2 (depth + 1) fn n)
+        |> List.reduce (fun a b -> $"{a},{b}")
+        |> sprintf "[%s]"

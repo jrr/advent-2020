@@ -34,6 +34,10 @@ let main argv =
 
     let rules = buildRuleMap (Input.exampleInput |> parse).rules
     let tree = buildTree rules 0
-    printTree tree
+    let opt = tree |> optimizeTree
+    opt |> printTree
+    printfn "==="
+    let s = walkMap2 0 id opt 
+    printfn "%s" s
 
     0
